@@ -28,7 +28,7 @@ import { Offline } from "react-detect-offline";
 import OfflineMessage from "./components/OfflineMessage";
 import Dashboard from "./pages/main/Dashbord";
 import Profile from "./pages/main/Profile";
-import Wishlist from "./pages/Cart//wishlist";
+import Wishlist from "./pages/Cart/Wishlist";
 import { useState, useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ApiErrorBoundary from "./components/ApiErrorBoundary";
@@ -137,7 +137,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: "/FreshCart",
+    basename: "/",
   }
 );
 
