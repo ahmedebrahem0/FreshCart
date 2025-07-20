@@ -137,7 +137,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: "/FreshCart/",
+    basename: process.env.NODE_ENV === 'production' ? "/FreshCart/" : "/",
   }
 );
 
