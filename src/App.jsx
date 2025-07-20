@@ -137,7 +137,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: "/e-commerce",
+    basename: "/FreshCart",
   }
 );
 
