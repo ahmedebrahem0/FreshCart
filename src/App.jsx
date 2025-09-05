@@ -40,100 +40,105 @@ import ApiErrorBoundary from "./components/ApiErrorBoundary";
 const reactQueryConfig = new QueryClient();
 //  console.log('skko')
 // تعريف Router مع basename
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        { index: true, element: <Navigate to="/Home" replace /> },
+        { path: "*", element: <NotFound /> },
+        {
+          path: "Home",
+          element: <Home />,
+        },
+        {
+          path: "Products",
+          element: (
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "ProductDetails/:id",
+          element: (
+            <ProtectedRoute>
+              <ProductDetails />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Categories",
+          element: (
+            <ProtectedRoute>
+              <Categories />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Brands",
+          element: (
+            <ProtectedRoute>
+              <Brands />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Payment",
+          element: (
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Cart",
+          element: (
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "allOrders",
+          element: (
+            <ProtectedRoute>
+              <AllOrders />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Dashboard",
+          element: (
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Profile",
+          element: (
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          ),
+        },
+        { path: "Register", element: <Register /> },
+        { path: "Login", element: <Login /> },
+        { path: "ForgetPassword", element: <ForgetPassword /> },
+        { path: "VerifyResetCode", element: <VerifyResetCode /> },
+        { path: "ChangeMyPassword", element: <ChangeMyPassword /> },
+        { path: "ResetPassword", element: <ResetPassword /> },
+        { path: "Footer", element: <Footer /> },
+        { path: "Wishlist", element: <Wishlist /> },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <Layout />,
-    children: [
-      { index: true, element: <Navigate to="/Home" replace /> },
-      { path: "*", element: <NotFound /> },
-      {
-        path: "Home",
-        element: <Home />,
-      },
-      {
-        path: "Products",
-        element: (
-          <ProtectedRoute>
-            <Products />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "ProductDetails/:id",
-        element: (
-          <ProtectedRoute>
-            <ProductDetails />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Categories",
-        element: (
-          <ProtectedRoute>
-            <Categories />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Brands",
-        element: (
-          <ProtectedRoute>
-            <Brands />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Payment",
-        element: (
-          <ProtectedRoute>
-            <Payment />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Cart",
-        element: (
-          <ProtectedRoute>
-            <Cart />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "allOrders",
-        element: (
-          <ProtectedRoute>
-            <AllOrders />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Dashboard",
-        element: (
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "Profile",
-        element: (
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        ),
-      },
-      { path: "Register", element: <Register /> },
-      { path: "Login", element: <Login /> },
-      { path: "ForgetPassword", element: <ForgetPassword /> },
-      { path: "VerifyResetCode", element: <VerifyResetCode /> },
-      { path: "ChangeMyPassword", element: <ChangeMyPassword /> },
-      { path: "ResetPassword", element: <ResetPassword /> },
-      { path: "Footer", element: <Footer /> },
-      { path: "Wishlist", element: <Wishlist /> },
-    ],
-  },
-]);
+    basename: process.env.NODE_ENV === "production" ? "/FreshCart/" : "/",
+  }
+);
 
 export default function App() {
   // منطق تأخير ظهور رسالة Offline
