@@ -1,6 +1,5 @@
 {
-  "homepage": "https://ahmedebrahem0.github.io/FreshCart",
-  "name": "my-project",
+  "name": "fresh-cart",
   "private": true,
   "version": "0.0.0",
   "type": "module",

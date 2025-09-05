@@ -55,11 +55,11 @@ export default function Footer() {
         {/* Payment Methods */}
         <div>
           <h4 className="text-lg font-bold text-[#0aad0a] mb-3">Payment Methods</h4>
-          <div className="flex flex-wrap gap-2 items-center">
-            <img src={amazon} alt="amazon" className="w-10 h-7 object-contain rounded shadow" />
-            <img src={amirecan} alt="american" className="w-10 h-7 object-contain rounded shadow" />
-            <img src={master} alt="master" className="w-10 h-7 object-contain rounded shadow" />
-            <img src={paypal} alt="paypal" className="w-10 h-7 object-contain rounded shadow" />
+          <div className="flex flex-wrap  justify-center flex-col gap-2 items-start">
+            <img src={amazon} alt="amazon" className="w-20 h-10 object-contain rounded shadow" />
+            <img src={amirecan} alt="american" className="w-20 h-10 object-contain rounded shadow" />
+            <img src={master} alt="master" className="w-20 h-10 object-contain rounded shadow" />
+            <img src={paypal} alt="paypal" className="w-20 h-10 object-contain rounded shadow" />
           </div>
         </div>
         {/* Download App */}

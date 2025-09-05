@@ -48,6 +48,7 @@ export default function Brands() {
               key={brand._id}
               className="brand bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl hover:shadow-2xl hover:scale-105 transform transition-all duration-300 ease-in-out group overflow-hidden"
             >
+              {console.log(brand)}
               <div className="relative overflow-hidden">
                 {/* طبقة التدرج اللوني */}
                 <div className="absolute inset-0 bg-gradient-to-t from-white/50 to-transparent dark:from-gray-800/50 dark:to-transparent z-10"></div>

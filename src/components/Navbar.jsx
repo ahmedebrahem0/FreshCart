@@ -13,19 +13,20 @@ export default function Navbar() {
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
   const { Token, setToken, decodedToken } = useContext(AuthContext);
-  const { numOfCartItems, numOfWishlist, setNumOfWishlist, getUserWishlist } = useContext(CartContext);
+  const { numOfCartItems, numOfWishlist, setNumOfWishlist, getUserWishlist } =
+    useContext(CartContext);
   const [showUserData, setShowUserData] = useState(false);
   const [userOrders, setUserOrders] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
   const userMenuRef = useRef();
   const userButtonRef = useRef();
 
-    // useEffect(() => {
-    //   console.log("useEffect in navbar");
-    //   // getUserWishlist()
-    //   setNumOfWishlist()
-    // },[])
-
+  // useEffect(() => {
+  //   console.log("useEffect in navbar");
+  //   // getUserWishlist()
+  //   setNumOfWishlist()
+  // },[])
 
   useEffect(() => {
     if (darkMode) {
@@ -38,15 +39,51 @@ export default function Navbar() {
   }, [darkMode]);
 
   useEffect(() => {
-    if (decodedToken?.id) {
+    const tokenFromStorage = localStorage.getItem("tkn");
+    const authToken = Token || tokenFromStorage;
+
+    if (authToken) {
+      // قراءة بيانات المستخدم من localStorage أولاً
+      const savedUserProfile = localStorage.getItem("userProfile");
+      if (savedUserProfile) {
+        try {
+          setUserProfile(JSON.parse(savedUserProfile));
+        } catch (error) {
+          console.error("Error parsing saved user profile:", error);
+        }
+      }
+
+      // جلب بيانات المستخدم من API كـ fallback
       axios
-        .get(
-          `https://ecommerce.routemisr.com/api/v1/orders/user/${decodedToken.id}`
-        )
-        .then((res) => setUserOrders(res.data))
-        .catch((error) => console.error("Error fetching orders:", error));
+        .get(`https://ecommerce.routemisr.com/api/v1/users/profile`, {
+          headers: { token: authToken },
+        })
+        .then((res) => {
+          const apiUserProfile = res.data?.data;
+          if (apiUserProfile) {
+            setUserProfile(apiUserProfile);
+            // حفظ البيانات الجديدة في localStorage
+            localStorage.setItem("userProfile", JSON.stringify(apiUserProfile));
+          }
+        })
+        .catch((error) => console.error("Error fetching user profile:", error));
+
+      // جلب طلبات المستخدم (يتطلب userId)
+      if (decodedToken?.id) {
+        axios
+          .get(
+            `https://ecommerce.routemisr.com/api/v1/orders/user/${decodedToken.id}`
+          )
+          .then((res) => setUserOrders(res.data))
+          .catch((error) => console.error("Error fetching orders:", error));
+      }
+    } else {
+      // إعادة تعيين البيانات عند تسجيل الخروج
+      setUserProfile(null);
+      setUserOrders([]);
+      localStorage.removeItem("userProfile");
     }
-  }, [decodedToken]);
+  }, [decodedToken, Token]);
 
   useEffect(() => {
     if (!showUserData) return;
@@ -76,7 +113,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="text-[#909090] bg-[#f0f3f2] dark:bg-gray-900 dark:backdrop-blur shadow-md transition-colors duration-500 border-b-[0.5px] border-white dark:border-gray-700">
+    <nav className="text-[#909090] bg-[#f0f3f2] dark:bg-gray-900 dark:backdrop-blur shadow-md transition-colors duration-500 border-b-[0.5px] border-white dark:border-gray-700 relative z-[99999]">
       {/* Main Navbar */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
@@ -232,41 +269,80 @@ export default function Navbar() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.22, ease: "easeOut" }}
-                      className="absolute right-0 top-full mt-3 w-80 rounded-2xl shadow-2xl z-50 overflow-hidden ring-1 ring-[#0aad0a]/10 border border-gray-100 dark:border-gray-700"
+                      className="absolute right-0 top-full mt-3 w-80 rounded-2xl shadow-2xl z-[99999] overflow-hidden ring-1 ring-[#0aad0a]/10 border border-gray-100 dark:border-gray-700"
                       ref={userMenuRef}
                     >
                       {/* الجزء العلوي: بيانات المستخدم */}
-                      <div className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-[#0aad0a]/90 via-[#e8fbe8] to-[#b2f2bb] dark:bg-gray-800">
-                        <div className="w-20 h-20 flex items-center justify-center rounded-full bg-white border-4 border-[#0aad0a] shadow-lg text-[#0aad0a] text-4xl font-extrabold mb-2">
-                          {userOrders[0]?.user?.name?.charAt(0)?.toUpperCase() || <i className='fa-solid fa-user'></i>}
+                      <div className="p-6 bg-gradient-to-r from-green-500 via-blue-500 to-purple-600 dark:from-green-600 dark:via-blue-600 dark:to-purple-700 relative overflow-hidden">
+                        {/* Background Pattern */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -translate-y-8 translate-x-8"></div>
+                        <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-8 -translate-x-8"></div>
+
+                        <div className="relative flex items-center space-x-4">
+                          <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white shadow-lg text-[#0aad0a] text-2xl font-bold">
+                            {userProfile?.name?.charAt(0)?.toUpperCase() ||
+                              userOrders[0]?.user?.name
+                                ?.charAt(0)
+                                ?.toUpperCase() || (
+                                <i className="fa-solid fa-user"></i>
+                              )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-white mb-1">
+                              {userProfile?.name ||
+                                userOrders[0]?.user?.name ||
+                                "No Name"}
+                            </h3>
+                            <div className="space-y-1">
+                              <p className="text-sm text-white/80 flex items-center">
+                                <i className="fa-solid fa-envelope mr-2 text-yellow-300"></i>
+                                {userProfile?.email ||
+                                  userOrders[0]?.user?.email ||
+                                  "No Email"}
+                              </p>
+                              <p className="text-sm text-white/80 flex items-center">
+                                <i className="fa-solid fa-user-tag mr-2 text-blue-300"></i>
+                                {userProfile?.role ||
+                                  userOrders[0]?.user?.role ||
+                                  "User"}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-xl font-bold text-[#0aad0a] dark:text-[#b2f2bb]">{userOrders[0]?.user?.name || "No Name"}</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">{userOrders[0]?.user?.email || "No Email"}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{userOrders[0]?.user?.phone || "No Phone"}</p>
                       </div>
-                      {/* فاصل ملون */}
-                      <div className="h-2 w-full bg-gradient-to-r from-[#0aad0a] via-[#b2f2bb] to-[#e8fbe8] dark:bg-gray-700"></div>
+                      {/* فاصل بسيط */}
+                      <div className="h-1 w-full bg-gradient-to-r from-green-500 via-blue-500 to-purple-600 dark:from-green-600 dark:via-blue-600 dark:to-purple-700"></div>
                       {/* الجزء السفلي: الأزرار */}
-                      <div className="flex flex-col gap-2 p-5 bg-white dark:bg-gray-900">
+                      <div className="flex flex-col gap-3 p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                         <Link
                           to="/Profile"
-                          className="w-full text-center py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mb-1 shadow"
+                          className="w-full text-center py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                           onClick={() => setShowUserData(false)}
                         >
-                          <i className="fa-solid fa-user"></i> My Profile
+                          <i className="fa-solid fa-user text-lg"></i>
+                          <span className="font-bold tracking-wide">
+                            My Profile
+                          </span>
                         </Link>
                         <Link
                           to="/ChangeMyPassword"
-                          className="w-full text-center py-2 rounded-lg text-sm font-semibold text-white bg-[#0aad0a] hover:bg-[#099409] dark:bg-[#14532d] dark:hover:bg-[#0aad0a] transition-colors flex items-center justify-center gap-2 mb-1 shadow"
+                          className="w-full text-center py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                           onClick={() => setShowUserData(false)}
                         >
-                          <i className="fa-solid fa-key"></i> Change Password
+                          <i className="fa-solid fa-key text-lg"></i>
+                          <span className="font-bold tracking-wide">
+                            Change Password
+                          </span>
                         </Link>
                         <button
                           onClick={handelLogout}
-                          className="w-full text-center py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-red-500 via-red-400 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-700 dark:to-red-900 transition-colors flex items-center justify-center gap-2 shadow"
+                          className="w-full text-center py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         >
-                          <i className="fas fa-sign-out-alt"></i> Sign Out
+                          <i className="fas fa-sign-out-alt text-lg"></i>
+                          <span className="font-bold tracking-wide">
+                            Sign Out
+                          </span>
                         </button>
                       </div>
                     </motion.div>

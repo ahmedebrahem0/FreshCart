@@ -183,7 +183,7 @@ export default function Dashboard() {
           <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#e0f2fe] to-[#b2f2bb] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">
             <FaShoppingCart className="text-3xl text-[#4361ee] bg-[#e0f2fe] p-2 rounded-full shadow mb-2" />
             <span className="text-base font-semibold text-gray-700 dark:text-white">Total Orders</span>
-            <span className="text-2xl font-extrabold text-[#14532d] dark:text-[#b2f2bb]">{totalOrders}</span>
+            <span className="text-2xl font-extrabold text-[#14532d] dark:text-[#255a2c]">{totalOrders}</span>
           </motion.div>
           {/* Total Sales */}
           <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#b2f2bb] to-[#a0c4ff] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">

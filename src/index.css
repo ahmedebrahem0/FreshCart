@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Toast Container Positioning */
+.Toastify__toast-container {
+  z-index: 9999 !important;
+  top: 80px !important;
+}
+
+.Toastify__toast-container--top-center {
+  top: 80px !important;
+}
+
+/* Custom Toast Styles for Auth Messages */
+.auth-toast {
+  background: linear-gradient(135deg, #0aad0a 0%, #088708 50%, #0aad0a 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(10, 173, 10, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  min-width: 350px;
+  max-width: 450px;
+  z-index: 9999 !important;
+}
+
+.auth-toast .Toastify__toast-body {
+  color: white;
+  font-weight: 600;
+  padding: 16px;
+}
+
+.auth-toast .Toastify__progress-bar {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.8) 100%);
+  height: 4px;
+}
+
+.auth-toast .Toastify__close-button {
+  color: white;
+  opacity: 0.9;
+  font-size: 18px;
+}
+
+.auth-toast .Toastify__close-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Animation for toast */
+.auth-toast {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 
 :root {
   --main-color: #0aad0a;
