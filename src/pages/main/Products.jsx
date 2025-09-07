@@ -365,7 +365,7 @@ function ProductCard({
           </span>
           <div className="flex items-center gap-1">
             <FaStar className="text-yellow-400 text-sm" />
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium dark:text-white">
               {product.ratingsAverage}
             </span>
             <span className="text-xs text-gray-500">
@@ -379,11 +379,14 @@ function ProductCard({
         </h3>
 
         {product.brand && (
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              Brand: {product.brand.name}
+            </span>
             <img
               src={product.brand.image}
               alt={product.brand.name}
-              className="w-4 h-4 rounded object-cover"
+              className="w-20 h-10 rounded object-cover"
               onError={(e) => {
                 e.target.style.display = "none";
                 e.target.nextSibling.style.display = "flex";
@@ -395,9 +398,6 @@ function ProductCard({
             >
               {product.brand.name.charAt(0)}
             </div>
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {product.brand.name}
-            </span>
           </div>
         )}
 

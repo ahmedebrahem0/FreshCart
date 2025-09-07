@@ -1,25 +1,28 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
-export default defineConfig({
-  base: process.env.NODE_ENV === "production" ? "/FreshCart/" : "/",
-  plugins: [react()],
-  server: {
-    port: 3000,
-  },
-  build: {
-    outDir: "dist",
-    assetsDir: "assets",
-    sourcemap: false,
-    minify: "terser",
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          router: ["react-router-dom"],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), ""); // يقرأ .env وبيئة Vercel
+  const isGhPages = env.GITHUB_PAGES === "true";
+  const repo = env.BASE_PATH || "FreshCart";    // غيّر اسم الريبو لو مختلف
+
+  return {
+    base: isGhPages ? `/${repo}/` : "/",        // GH Pages ←→ Vercel
+    plugins: [react()],
+    server: { port: 3000 },
+    build: {
+      outDir: "dist",
+      assetsDir: "assets",
+      sourcemap: false,
+      minify: "esbuild",
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ["react", "react-dom"],
+            router: ["react-router-dom"],
+          },
         },
       },
     },
-  },
+  };
 });
