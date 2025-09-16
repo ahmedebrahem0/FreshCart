@@ -99,31 +99,42 @@
   --neutral-gray-800: #1e293b;
   --neutral-gray-900: #0f172a;
 
-  /* ألوان الوضع الداكن المحسنة */
+  /* ألوان الوضع الداكن المحسنة والمطورة */
   --dark-bg-primary: #0f172a;
   --dark-bg-secondary: #1e293b;
   --dark-bg-tertiary: #334155;
   --dark-bg-card: #1e293b;
   --dark-bg-elevated: #334155;
+  
+  /* تدرجات محسنة */
+  --dark-gradient-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --dark-gradient-card: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  --dark-gradient-accent: linear-gradient(135deg, #1e293b 0%, #475569 100%);
 
   --dark-text-primary: #f8fafc;
   --dark-text-secondary: #cbd5e1;
   --dark-text-tertiary: #94a3b8;
   --dark-text-muted: #64748b;
+  --dark-text-accent: #e2e8f0;
 
   --dark-border-primary: #334155;
   --dark-border-secondary: #475569;
   --dark-border-accent: #0aad0a;
+  --dark-border-subtle: #1e293b;
 
-  --dark-shadow-light: rgba(0, 0, 0, 0.3);
-  --dark-shadow-medium: rgba(0, 0, 0, 0.5);
-  --dark-shadow-heavy: rgba(0, 0, 0, 0.7);
+  /* ظلال محسنة */
+  --dark-shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --dark-shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --dark-shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --dark-shadow-glow: 0 0 20px rgba(16, 185, 129, 0.1);
 
   --dark-accent-green: #10b981;
   --dark-accent-blue: #3b82f6;
   --dark-accent-purple: #8b5cf6;
   --dark-accent-orange: #f59e0b;
   --dark-accent-red: #ef4444;
+  --dark-accent-cyan: #06b6d4;
+  --dark-accent-pink: #ec4899;
 }
 
 body {
@@ -304,7 +315,7 @@ body {
   border-color: var(--accent-orange);
 }
 
-/* فئات ألوان الوضع الداكن المحسنة */
+/* فئات ألوان الوضع الداكن المحسنة والمطورة */
 .dark .bg-dark-primary {
   background-color: var(--dark-bg-primary);
 }
@@ -325,6 +336,19 @@ body {
   background-color: var(--dark-bg-elevated);
 }
 
+/* تدرجات محسنة */
+.dark .bg-dark-gradient-primary {
+  background: var(--dark-gradient-primary);
+}
+
+.dark .bg-dark-gradient-card {
+  background: var(--dark-gradient-card);
+}
+
+.dark .bg-dark-gradient-accent {
+  background: var(--dark-gradient-accent);
+}
+
 .dark .text-dark-primary {
   color: var(--dark-text-primary);
 }
@@ -341,6 +365,10 @@ body {
   color: var(--dark-text-muted);
 }
 
+.dark .text-dark-accent {
+  color: var(--dark-text-accent);
+}
+
 .dark .border-dark-primary {
   border-color: var(--dark-border-primary);
 }
@@ -353,19 +381,27 @@ body {
   border-color: var(--dark-border-accent);
 }
 
+.dark .border-dark-subtle {
+  border-color: var(--dark-border-subtle);
+}
+
 .dark .shadow-dark-light {
-  box-shadow: 0 4px 6px -1px var(--dark-shadow-light);
+  box-shadow: var(--dark-shadow-light);
 }
 
 .dark .shadow-dark-medium {
-  box-shadow: 0 10px 15px -3px var(--dark-shadow-medium);
+  box-shadow: var(--dark-shadow-medium);
 }
 
 .dark .shadow-dark-heavy {
-  box-shadow: 0 25px 50px -12px var(--dark-shadow-heavy);
+  box-shadow: var(--dark-shadow-heavy);
 }
 
-/* ألوان مميزة للوضع الداكن */
+.dark .shadow-dark-glow {
+  box-shadow: var(--dark-shadow-glow);
+}
+
+/* ألوان مميزة للوضع الداكن المحسنة */
 .dark .text-dark-accent-green {
   color: var(--dark-accent-green);
 }
@@ -386,6 +422,14 @@ body {
   color: var(--dark-accent-red);
 }
 
+.dark .text-dark-accent-cyan {
+  color: var(--dark-accent-cyan);
+}
+
+.dark .text-dark-accent-pink {
+  color: var(--dark-accent-pink);
+}
+
 .dark .bg-dark-accent-green {
   background-color: var(--dark-accent-green);
 }
@@ -404,6 +448,14 @@ body {
 
 .dark .bg-dark-accent-red {
   background-color: var(--dark-accent-red);
+}
+
+.dark .bg-dark-accent-cyan {
+  background-color: var(--dark-accent-cyan);
+}
+
+.dark .bg-dark-accent-pink {
+  background-color: var(--dark-accent-pink);
 }
 
 /* img {

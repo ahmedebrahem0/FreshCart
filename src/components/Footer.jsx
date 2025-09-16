@@ -14,7 +14,7 @@ export default function Footer() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: 'easeOut' }}
-      className="bg-gradient-to-br from-[#e8fbe8] via-[#f0f3f2] to-[#b2f2bb] dark:bg-[#0f172a] dark:bg-gradient-to-br dark:from-[#0f172a] dark:via-[#0f172a] dark:to-[#0f172a] dark:shadow-gray-800 text-[#222] dark:text-gray-200 border-t border-[#0aad0a]/10 dark:border-gray-700 pt-10 pb-2 px-0 mt-10 shadow-inner"
+      className="bg-gradient-to-br from-[#e8fbe8] via-[#f0f3f2] to-[#b2f2bb] dark:bg-[#0f172a] dark:bg-gradient-to-br dark:from-[#0f172a] dark:via-[#0f172a] dark:to-[#0f172a] dark:shadow-gray-800 text-[#222] dark:text-gray-200 border-t border-[#0aad0a]/10 dark:border-gray-700 pt-10 pb-2 px-0  shadow-inner"
     >
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-5 gap-8">
         {/* About Us */}

@@ -146,7 +146,7 @@ function ProductCard({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
+        className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg dark:shadow-xl dark:shadow-slate-900/30 hover:shadow-2xl dark:hover:shadow-2xl dark:hover:shadow-slate-900/50 transition-all duration-300 overflow-hidden group border dark:border-slate-600/20"
       >
         <div className="flex">
           <div className="relative w-64 h-48 flex-shrink-0">
@@ -301,7 +301,7 @@ function ProductCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -8, scale: 1.02 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
+      className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg dark:shadow-xl dark:shadow-slate-900/30 hover:shadow-2xl dark:hover:shadow-2xl dark:hover:shadow-slate-900/50 transition-all duration-300 overflow-hidden group border dark:border-slate-600/20"
     >
       <div className="relative">
         <img
@@ -470,24 +470,63 @@ export default function Products() {
   const categories = categoriesData?.data?.data || [];
   const brands = brandsData?.data?.data || [];
 
-  // Filter brands that actually have products with count
-  const availableBrands = useMemo(() => {
-    const brandCounts = {};
-    products.forEach((product) => {
-      if (product.brand) {
-        brandCounts[product.brand._id] =
-          (brandCounts[product.brand._id] || 0) + 1;
-      }
-    });
+  // Category-Brand mapping
+  const categoryBrandMapping = {
+    "Men's Fashion": ["Puma", "Jack & Jones", "Adidas", "LC Waikiki"],
+    "Women's Fashion": ["Defacto"],
+    Electronics: ["Sony", "Canon", "Samsung","Dell"],
+  };
 
-    return brands
-      .filter((brand) => brandCounts[brand._id])
-      .map((brand) => ({
-        ...brand,
-        productCount: brandCounts[brand._id],
-      }))
-      .sort((a, b) => b.productCount - a.productCount);
-  }, [brands, products]);
+  // Filter brands based on selected category
+  const availableBrands = useMemo(() => {
+    if (!selectedCategory) {
+      // If no category selected, show all brands with product count
+      const brandCounts = {};
+      products.forEach((product) => {
+        if (product.brand) {
+          brandCounts[product.brand._id] =
+            (brandCounts[product.brand._id] || 0) + 1;
+        }
+      });
+
+      return brands
+        .filter((brand) => brandCounts[brand._id])
+        .map((brand) => ({
+          ...brand,
+          productCount: brandCounts[brand._id],
+        }))
+        .sort((a, b) => b.productCount - a.productCount);
+    } else {
+      // Filter brands based on category mapping and show product count
+      const categoryName = categories.find(
+      
+        (cat) => cat._id === selectedCategory
+      )?.name;
+      const allowedBrandNames = categoryBrandMapping[categoryName] || [];
+
+      // Get product counts for brands in the selected category
+      const brandCounts = {};
+      products.forEach((product) => {
+        if (product.brand && product.category._id === selectedCategory) {
+          brandCounts[product.brand._id] =
+            (brandCounts[product.brand._id] || 0) + 1;
+        }
+      });
+
+      return brands
+        .filter((brand) =>
+          allowedBrandNames.some((name) =>
+            brand.name.toLowerCase().includes(name.toLowerCase())
+          )
+        )
+        .map((brand) => ({
+          ...brand,
+          productCount: brandCounts[brand._id] || 0,
+        }))
+        .filter((brand) => brand.productCount > 0) // Only show brands with products
+        .sort((a, b) => b.productCount - a.productCount);
+    }
+  }, [brands, products, selectedCategory, categories]);
 
   // Filter categories that actually have products with count
   const availableCategories = useMemo(() => {
@@ -680,6 +719,11 @@ export default function Products() {
     sortBy,
   ]);
 
+  // Reset brand selection when category changes
+  useEffect(() => {
+    setSelectedBrand("");
+  }, [selectedCategory]);
+
   if (isError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
@@ -705,7 +749,7 @@ export default function Products() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Progress bar */}
       <motion.div
         className="progress-bar fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 z-50"
@@ -761,7 +805,7 @@ export default function Products() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8"
+          className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl dark:shadow-2xl dark:shadow-slate-900/50 p-6 mb-8 border dark:border-slate-600/30"
         >
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
@@ -847,7 +891,7 @@ export default function Products() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Brand
                   </label>
-                  
+
                   <select
                     value={selectedBrand}
                     onChange={(e) => setSelectedBrand(e.target.value)}

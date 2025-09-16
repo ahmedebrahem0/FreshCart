@@ -15,12 +15,17 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.1",
+    "@radix-ui/react-slot": "^1.2.3",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "embla-carousel-react": "^8.6.0",
     "formik": "^2.4.6",
     "framer-motion": "^11.15.0",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.543.0",
     "motion": "^11.15.0",
     "ngx-skeleton-loader": "^9.0.0",
     "react": "^18.3.1",
@@ -37,6 +42,7 @@
     "react-toastify": "^11.0.2",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.1",
+    "tailwind-merge": "^3.3.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {

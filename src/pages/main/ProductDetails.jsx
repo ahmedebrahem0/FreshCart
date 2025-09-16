@@ -119,6 +119,13 @@ export default function ProductDetails() {
     }
   };
 
+  // Utility: limit text to a maximum number of words to keep layout tidy
+  const limitWords = (input, maxWords = 3) => {
+    if (input == null) return "";
+    const words = String(input).trim().split(/\s+/);
+    return words.slice(0, maxWords).join(" ");
+  };
+
   // Handlers
   const handleAddToCart = async () => {
     if (!Token) {
@@ -455,8 +462,8 @@ export default function ProductDetails() {
                     <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
                       Sold
                     </div>
-                    <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                      {formatSold(product.sold)}
+                    <div className="text-lg font-bold text-purple-600 dark:text-purple-400 truncate max-w-[120px]">
+                      {limitWords(formatSold(product.sold), 3)}
                     </div>
                   </div>
                 </div>

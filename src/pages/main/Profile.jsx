@@ -26,7 +26,7 @@ export default function Profile() {
     totalSpent: 0,
     averageOrderValue: 0,
     favoriteCategories: [],
-    recentActivity: []
+    recentActivity: [],
   });
 
   // دالة لحساب إحصائيات المستخدم
@@ -37,18 +37,21 @@ export default function Profile() {
         totalSpent: 0,
         averageOrderValue: 0,
         favoriteCategories: [],
-        recentActivity: []
+        recentActivity: [],
       };
     }
 
     const totalOrders = ordersData.length;
-    const totalSpent = ordersData.reduce((sum, order) => sum + (order.totalOrderPrice || 0), 0);
+    const totalSpent = ordersData.reduce(
+      (sum, order) => sum + (order.totalOrderPrice || 0),
+      0
+    );
     const averageOrderValue = totalOrders > 0 ? totalSpent / totalOrders : 0;
 
     // حساب الفئات المفضلة
     const categoryCount = {};
-    ordersData.forEach(order => {
-      order.cartItems?.forEach(item => {
+    ordersData.forEach((order) => {
+      order.cartItems?.forEach((item) => {
         const categoryName = item.product?.category?.name;
         if (categoryName) {
           categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
@@ -57,7 +60,7 @@ export default function Profile() {
     });
 
     const favoriteCategories = Object.entries(categoryCount)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([name, count]) => ({ name, count }));
 
@@ -65,12 +68,12 @@ export default function Profile() {
     const recentActivity = ordersData
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 5)
-      .map(order => ({
+      .map((order) => ({
         id: order._id,
         date: order.createdAt,
         total: order.totalOrderPrice,
         status: order.status,
-        itemsCount: order.cartItems?.length || 0
+        itemsCount: order.cartItems?.length || 0,
       }));
 
     return {
@@ -78,7 +81,7 @@ export default function Profile() {
       totalSpent,
       averageOrderValue,
       favoriteCategories,
-      recentActivity
+      recentActivity,
     };
   };
 
@@ -95,7 +98,7 @@ export default function Profile() {
 
         setLoading(true);
         setLastToken(token);
-        
+
         // فحص التوكن فقط، بدون فحص decodedToken
         if (!token) {
           setError("Please login to view your profile");
@@ -134,7 +137,7 @@ export default function Profile() {
         const ordersResponse = await fetch(
           `https://ecommerce.routemisr.com/api/v1/orders/user/${userId}`,
           {
-          headers: {
+            headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
@@ -187,7 +190,7 @@ export default function Profile() {
           } catch (profileError) {
             console.error("Error fetching profile:", profileError);
             // Fallback إلى بيانات decodedToken
-          setUserData({
+            setUserData({
               name: decodedToken?.name,
               email: decodedToken?.email,
               phone: decodedToken?.phone,
@@ -264,104 +267,304 @@ export default function Profile() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
-          
-          <div className="relative flex items-center space-x-6">
-            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-white shadow-lg text-[#0aad0a] text-3xl font-bold">
-              {userData?.name?.charAt(0)?.toUpperCase() ||
-                decodedToken?.name?.charAt(0)?.toUpperCase() || (
-                  <i className="fa-solid fa-user"></i>
-                )}
+
+          <div className="relative">
+            {/* Header with Avatar and Basic Info */}
+            <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8 mb-8">
+              {/* Avatar */}
+              <div className="w-24 h-24 flex items-center justify-center rounded-full bg-white shadow-xl text-[#0aad0a] text-4xl font-bold">
+                {userData?.name?.charAt(0)?.toUpperCase() ||
+                  decodedToken?.name?.charAt(0)?.toUpperCase() || (
+                    <i className="fa-solid fa-user"></i>
+                  )}
+              </div>
+
+              {/* Basic Info */}
+              <div className="text-center md:text-left">
+                <h1 className="text-4xl font-bold text-white mb-2">
+                  My Profile
+                </h1>
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  {userData?.name || decodedToken?.name || "No Name"}
+                </h3>
+                <div className="flex flex-col md:flex-row items-center md:items-start space-y-2 md:space-y-0 md:space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <i className="fa-solid fa-envelope text-yellow-300"></i>
+                    <span className="text-white/90 text-sm">
+                      {userData?.email || decodedToken?.email || "No Email"}
+                    </span>
+                  </div>
+                  {(userData?.phone || decodedToken?.phone) && (
+                    <div className="flex items-center space-x-2">
+                      <i className="fa-solid fa-phone text-green-300"></i>
+                      <span className="text-white/90 text-sm">
+                        {userData?.phone || decodedToken?.phone}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-white mb-2">My Profile</h1>
-              <h3 className="text-xl font-bold text-white mb-1">
-                {userData?.name || decodedToken?.name || "No Name"}
-              </h3>
-              <div className="space-y-1">
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-envelope mr-2 text-yellow-300"></i>
-                  {userData?.email || decodedToken?.email || "No Email"}
-                </p>
-                {(userData?.phone || decodedToken?.phone) && (
-                  <p className="text-white/80 text-sm flex items-center">
-                    <i className="fa-solid fa-phone mr-2 text-green-300"></i>
-                    {userData?.phone || decodedToken?.phone}
-                  </p>
-                )}
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-shopping-bag mr-2 text-purple-300"></i>
-                  {orders.length} orders • {userStats.totalSpent.toFixed(0)} EGP total
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-star mr-2 text-yellow-300"></i>
-                  Member since {userData?.createdAt ? new Date(userData.createdAt).getFullYear() : new Date().getFullYear()}
-                </p>
-                {userStats.favoriteCategories[0] && (
-                  <p className="text-white/80 text-sm flex items-center">
-                    <i className="fa-solid fa-heart mr-2 text-red-300"></i>
-                    Favorite: {userStats.favoriteCategories[0].name}
-                  </p>
-                )}
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-chart-line mr-2 text-blue-300"></i>
-                  Avg Order: {userStats.averageOrderValue.toFixed(0)} EGP
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-calendar mr-2 text-green-300"></i>
-                  Last Order: {orders.length > 0 ? new Date(orders[0].createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'None'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-trophy mr-2 text-yellow-300"></i>
-                  Status: {userStats.totalOrders > 10 ? 'VIP' : userStats.totalOrders > 5 ? 'Premium' : 'Regular'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-shield mr-2 text-blue-300"></i>
-                  Account: {userData?.role || 'User'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-clock mr-2 text-purple-300"></i>
-                  Last Login: {userData?.lastLogin ? new Date(userData.lastLogin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Today'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-gift mr-2 text-pink-300"></i>
-                  Rewards: {userStats.totalOrders * 10} points
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-medal mr-2 text-yellow-300"></i>
-                  Level: {userStats.totalOrders > 20 ? 'Gold' : userStats.totalOrders > 10 ? 'Silver' : 'Bronze'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-fire mr-2 text-red-300"></i>
-                  Streak: {userStats.totalOrders > 0 ? Math.min(userStats.totalOrders, 30) : 0} days
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-crown mr-2 text-purple-300"></i>
-                  Rank: #{userStats.totalOrders > 0 ? Math.max(1, 1000 - userStats.totalOrders) : 'N/A'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-badge mr-2 text-green-300"></i>
-                  Badges: {userStats.totalOrders > 50 ? 'Legend' : userStats.totalOrders > 25 ? 'Master' : userStats.totalOrders > 10 ? 'Expert' : 'Beginner'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-star mr-2 text-yellow-300"></i>
-                  Rating: {userStats.totalOrders > 0 ? (4.5 + (userStats.totalOrders * 0.01)).toFixed(1) : 'N/A'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-trophy mr-2 text-orange-300"></i>
-                  Achievements: {userStats.totalOrders > 100 ? 'Hall of Fame' : userStats.totalOrders > 50 ? 'Champion' : userStats.totalOrders > 20 ? 'Hero' : 'Rookie'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-gem mr-2 text-blue-300"></i>
-                  VIP Status: {userStats.totalSpent > 10000 ? 'Diamond' : userStats.totalSpent > 5000 ? 'Gold' : userStats.totalSpent > 1000 ? 'Silver' : 'Bronze'}
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-rocket mr-2 text-purple-300"></i>
-                  Next Level: {userStats.totalOrders > 0 ? Math.ceil(userStats.totalOrders / 10) * 10 - userStats.totalOrders : 10} orders
-                </p>
-                <p className="text-white/80 text-sm flex items-center">
-                  <i className="fa-solid fa-coins mr-2 text-yellow-300"></i>
-                  Savings: {userStats.totalOrders * 50} EGP
-                </p>
+
+            {/* Profile Stats Circles */}
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+              {/* Orders */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-shopping-bag text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {orders.length}
+                </div>
+                <div className="text-white/80 text-xs">Orders</div>
+              </div>
+
+              {/* Total Spent */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-money-bill-wave text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalSpent.toFixed(0)}
+                </div>
+                <div className="text-white/80 text-xs">EGP Total</div>
+              </div>
+
+              {/* Member Since */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-star text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userData?.createdAt
+                    ? new Date(userData.createdAt).getFullYear()
+                    : new Date().getFullYear()}
+                </div>
+                <div className="text-white/80 text-xs">Member Since</div>
+              </div>
+
+              {/* Favorite Category */}
+              {userStats.favoriteCategories[0] && (
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                  <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                    <i className="fa-solid fa-heart text-white text-sm"></i>
+                  </div>
+                  <div className="text-white font-bold text-xs leading-tight">
+                    {userStats.favoriteCategories[0].name}
+                  </div>
+                  <div className="text-white/80 text-xs">Favorite</div>
+                </div>
+              )}
+
+              {/* Average Order */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-chart-line text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.averageOrderValue.toFixed(0)}
+                </div>
+                <div className="text-white/80 text-xs">Avg Order</div>
+              </div>
+
+              {/* Last Order */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-calendar text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {orders.length > 0
+                    ? new Date(orders[0].createdAt).toLocaleDateString(
+                        "en-US",
+                        { month: "short", day: "numeric" }
+                      )
+                    : "None"}
+                </div>
+                <div className="text-white/80 text-xs">Last Order</div>
+              </div>
+
+              {/* Status */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-trophy text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 10
+                    ? "VIP"
+                    : userStats.totalOrders > 5
+                    ? "Premium"
+                    : "Regular"}
+                </div>
+                <div className="text-white/80 text-xs">Status</div>
+              </div>
+
+              {/* Account Type */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-shield text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userData?.role || "User"}
+                </div>
+                <div className="text-white/80 text-xs">Account</div>
+              </div>
+
+              {/* Last Login */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-clock text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userData?.lastLogin
+                    ? new Date(userData.lastLogin).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : "Today"}
+                </div>
+                <div className="text-white/80 text-xs">Last Login</div>
+              </div>
+
+              {/* Rewards */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-gift text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders * 10}
+                </div>
+                <div className="text-white/80 text-xs">Rewards</div>
+              </div>
+
+              {/* Level */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-medal text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 20
+                    ? "Gold"
+                    : userStats.totalOrders > 10
+                    ? "Silver"
+                    : "Bronze"}
+                </div>
+                <div className="text-white/80 text-xs">Level</div>
+              </div>
+
+              {/* Streak */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-fire text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 0
+                    ? Math.min(userStats.totalOrders, 30)
+                    : 0}
+                </div>
+                <div className="text-white/80 text-xs">Streak Days</div>
+              </div>
+
+              {/* Rank */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-crown text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  #
+                  {userStats.totalOrders > 0
+                    ? Math.max(1, 1000 - userStats.totalOrders)
+                    : "N/A"}
+                </div>
+                <div className="text-white/80 text-xs">Rank</div>
+              </div>
+
+              {/* Badges */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-badge text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 50
+                    ? "Legend"
+                    : userStats.totalOrders > 25
+                    ? "Master"
+                    : userStats.totalOrders > 10
+                    ? "Expert"
+                    : "Beginner"}
+                </div>
+                <div className="text-white/80 text-xs">Badges</div>
+              </div>
+
+              {/* Rating */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-star text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 0
+                    ? (4.5 + userStats.totalOrders * 0.01).toFixed(1)
+                    : "N/A"}
+                </div>
+                <div className="text-white/80 text-xs">Rating</div>
+              </div>
+
+              {/* Achievements */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-trophy text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 100
+                    ? "Hall of Fame"
+                    : userStats.totalOrders > 50
+                    ? "Champion"
+                    : userStats.totalOrders > 20
+                    ? "Hero"
+                    : "Rookie"}
+                </div>
+                <div className="text-white/80 text-xs">Achievements</div>
+              </div>
+
+              {/* VIP Status */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-gem text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalSpent > 10000
+                    ? "Diamond"
+                    : userStats.totalSpent > 5000
+                    ? "Gold"
+                    : userStats.totalSpent > 1000
+                    ? "Silver"
+                    : "Bronze"}
+                </div>
+                <div className="text-white/80 text-xs">VIP Status</div>
+              </div>
+
+              {/* Next Level */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-rocket text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders > 0
+                    ? Math.ceil(userStats.totalOrders / 10) * 10 -
+                      userStats.totalOrders
+                    : 10}
+                </div>
+                <div className="text-white/80 text-xs">To Next Level</div>
+              </div>
+
+              {/* Savings */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 text-center hover:bg-white/30 transition-all duration-300">
+                <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <i className="fa-solid fa-coins text-white text-sm"></i>
+                </div>
+                <div className="text-white font-bold text-sm">
+                  {userStats.totalOrders * 50}
+                </div>
+                <div className="text-white/80 text-xs">EGP Saved</div>
               </div>
             </div>
           </div>
@@ -378,7 +581,9 @@ export default function Profile() {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl p-6 text-white shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Orders</p>
+                <p className="text-blue-100 text-sm font-medium">
+                  Total Orders
+                </p>
                 <p className="text-3xl font-bold">{userStats.totalOrders}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -391,8 +596,12 @@ export default function Profile() {
           <div className="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-2xl p-6 text-white shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Total Spent</p>
-                <p className="text-3xl font-bold">{userStats.totalSpent.toFixed(0)} EGP</p>
+                <p className="text-green-100 text-sm font-medium">
+                  Total Spent
+                </p>
+                <p className="text-3xl font-bold">
+                  {userStats.totalSpent.toFixed(0)} EGP
+                </p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                 <FaMoneyBillWave className="text-2xl" />
@@ -404,8 +613,12 @@ export default function Profile() {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-2xl p-6 text-white shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Avg Order Value</p>
-                <p className="text-3xl font-bold">{userStats.averageOrderValue.toFixed(0)} EGP</p>
+                <p className="text-purple-100 text-sm font-medium">
+                  Avg Order Value
+                </p>
+                <p className="text-3xl font-bold">
+                  {userStats.averageOrderValue.toFixed(0)} EGP
+                </p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                 <FaCalendarAlt className="text-2xl" />
@@ -417,7 +630,9 @@ export default function Profile() {
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-2xl p-6 text-white shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm font-medium">Favorite Category</p>
+                <p className="text-orange-100 text-sm font-medium">
+                  Favorite Category
+                </p>
                 <p className="text-lg font-bold">
                   {userStats.favoriteCategories[0]?.name || "None"}
                 </p>
@@ -448,8 +663,12 @@ export default function Profile() {
                   <FaUser className="text-white text-xl" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Favorite Categories</h2>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">Your most shopped categories</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Favorite Categories
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Your most shopped categories
+                  </p>
                 </div>
               </div>
             </div>
@@ -466,11 +685,17 @@ export default function Profile() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-bold text-gray-900 dark:text-white">{category.name}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{category.count} orders</p>
+                        <h3 className="font-bold text-gray-900 dark:text-white">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {category.count} orders
+                        </p>
                       </div>
                       <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">{index + 1}</span>
+                        <span className="text-white font-bold text-sm">
+                          {index + 1}
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -494,8 +719,12 @@ export default function Profile() {
                   <FaClock className="text-white text-xl" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Activity</h2>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">Your latest shopping activities</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Recent Activity
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Your latest shopping activities
+                  </p>
                 </div>
               </div>
             </div>
@@ -519,10 +748,10 @@ export default function Profile() {
                           Order #{activity.id.slice(-8).toUpperCase()}
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(activity.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
+                          {new Date(activity.date).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
                           })}
                         </p>
                       </div>
@@ -533,8 +762,12 @@ export default function Profile() {
                       </p>
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(activity.status)}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
-                          {activity.status || 'Pending'}
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            activity.status
+                          )}`}
+                        >
+                          {activity.status || "Pending"}
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -624,7 +857,7 @@ export default function Profile() {
                           Order #{order._id.slice(-8).toUpperCase()}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div className="flex items-center space-x-2">
                           <FaCalendarAlt className="text-gray-400 dark:text-gray-500" />
@@ -645,18 +878,18 @@ export default function Profile() {
                             Total: {order.totalOrderPrice} EGP
                           </span>
                         </div>
-                                                 <div className="flex items-center space-x-2">
-                           <FaShoppingBag className="text-gray-400 dark:text-gray-500" />
-                           <span className="text-gray-600 dark:text-gray-300">
-                             {order.cartItems?.length || 0} items
-                           </span>
-                         </div>
-                         <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2">
+                          <FaShoppingBag className="text-gray-400 dark:text-gray-500" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            {order.cartItems?.length || 0} items
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
                           <FaTruck className="text-gray-400 dark:text-gray-500" />
-                           <span className="text-gray-600 dark:text-gray-300">
+                          <span className="text-gray-600 dark:text-gray-300">
                             {order.paymentMethodType || "N/A"}
-                           </span>
-                         </div>
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -695,9 +928,12 @@ export default function Profile() {
                                       <i
                                         key={i}
                                         className={`fa-solid fa-star text-xs ${
-                                          i < Math.floor(item.product.ratingsAverage)
-                                            ? 'text-yellow-400'
-                                            : 'text-gray-300'
+                                          i <
+                                          Math.floor(
+                                            item.product.ratingsAverage
+                                          )
+                                            ? "text-yellow-400"
+                                            : "text-gray-300"
                                         }`}
                                       />
                                     ))}
@@ -745,4 +981,4 @@ export default function Profile() {
       </div>
     </div>
   );
-} 
+}

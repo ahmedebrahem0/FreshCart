@@ -5,10 +5,13 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import AuthGuard from "./AuthGuard";
+import { FaRegHeart, FaShoppingCart, FaSpinner } from "react-icons/fa";
 
 const EnhancedProductCard = ({ product }) => {
   const [correct, setCorrect] = useState(null);
   const [heart, setHeart] = useState(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const { Token } = useContext(AuthContext);
   const {
     addProduct,
@@ -68,10 +71,12 @@ const EnhancedProductCard = ({ product }) => {
       return;
     }
 
+    setIsAddingToCart(true);
     const response = await addProduct(id);
-    setCorrect(id);
+    setIsAddingToCart(false);
 
     if (response.status === true) {
+      setCorrect(id);
       setTimeout(() => {
         setCorrect(null);
       }, 2000);
@@ -122,8 +127,10 @@ const EnhancedProductCard = ({ product }) => {
     }
 
     if (heart === id) return;
+    setIsAddingToWishlist(true);
     setHeart(id);
     const response = await handelWishlist(id);
+    setIsAddingToWishlist(false);
 
     if (response.status === true) {
       const res = await getUserWishlist();
@@ -141,7 +148,7 @@ const EnhancedProductCard = ({ product }) => {
 
   return (
     <motion.div
-      className="product mb-5 bg-white px-4 pb-2 rounded-lg shadow-md cursor-pointer dark:bg-[#2A3E4B] dark:shadow-gray-800"
+      className="product mb-5 bg-white px-4 pb-2 rounded-lg shadow-md cursor-pointer dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 dark:shadow-xl dark:shadow-slate-900/30 border dark:border-slate-600/20"
       key={product._id}
       initial={{ opacity: 1 }}
       whileHover={{
@@ -156,50 +163,30 @@ const EnhancedProductCard = ({ product }) => {
     >
       <div className="hover:shadow-orange-400 overflow-hidden pt-2 group relative">
         {/* زر إضافة للسلة */}
-        <i
+        <button
           onClick={() => handelProduct(product._id)}
-          className={`
-             ${
-               correct === product._id
-                 ? `fa fa-check bg-green-500`
-                 : isInCart(product._id)
-                 ? `fa-solid fa-cart-shopping bg-[#e63946]`
-                 : `fa-solid fa-cart-shopping bg-[#0aad0a]`
-             }
-             hidden group-hover:flex 
-             w-10 h-10 
-             text-white 
-             p-2 rounded-full shadow-md 
-             items-center justify-center 
-             absolute top-2 right-2 
-             transition-all duration-300 ease-in-out`}
-          style={{
-            cursor: isInCart(product._id) ? "not-allowed" : "pointer",
-          }}
-        ></i>
+          disabled={isAddingToCart}
+          className="hidden group-hover:flex w-8 h-8 bg-white/90 hover:bg-white rounded-full items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 absolute top-2 right-2"
+        >
+          {isAddingToCart ? (
+            <FaSpinner className="animate-spin text-green-500" />
+          ) : (
+            <FaShoppingCart className="text-green-500 hover:text-green-600" />
+          )}
+        </button>
 
         {/* زر إضافة للمفضلة */}
-        <i
+        <button
           onClick={() => Wishlist(product._id)}
-          className={`
-             ${
-               heart === product._id
-                 ? `fa fa-check bg-green-500`
-                 : isInWishlist(product._id)
-                 ? `fa-solid fa-heart bg-[#e63946]`
-                 : `fa-solid fa-heart bg-[#0aad0a]`
-             }
-             hidden group-hover:flex 
-             w-10 h-10 
-             text-white 
-             p-2 mt-1 rounded-full shadow-md 
-             items-center justify-center 
-             absolute top-12 right-2
-             transition-all duration-300 ease-in-out`}
-          style={{
-            cursor: isInWishlist(product._id) ? "not-allowed" : "pointer",
-          }}
-        ></i>
+          disabled={isAddingToWishlist}
+          className="hidden group-hover:flex w-8 h-8 bg-white/90 hover:bg-white rounded-full items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 absolute top-12 right-2"
+        >
+          {isAddingToWishlist ? (
+            <FaSpinner className="animate-spin text-red-500" />
+          ) : (
+            <FaRegHeart className="text-red-500 hover:text-red-600" />
+          )}
+        </button>
 
         {/* رابط المنتج */}
         <Link to={`/ProductDetails/${product._id}`}>

@@ -148,20 +148,21 @@ export default function Navbar() {
                     Products
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink
-                    to="/Categories"
-                    className="hover:text-[#0aad0a] transition-colors"
-                  >
-                    Categories
-                  </NavLink>
-                </li>
+
                 <li>
                   <NavLink
                     to="/Brands"
                     className="hover:text-[#0aad0a] transition-colors"
                   >
                     Brands
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/Categories"
+                    className="hover:text-[#0aad0a] transition-colors"
+                  >
+                    Categories
                   </NavLink>
                 </li>
                 <li>
@@ -180,7 +181,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4 max-lg:ml-4">
             <div className="hidden md:flex items-center gap-4 ">
               {/* Social Media Icons */}
-              <div className="flex items-center gap-4">
+              {/* <div className="flex items-center gap-4">
                 <a
                   href="#"
                   className="text-xl text-black dark:text-white hover:text-[#0aad0a]"
@@ -217,7 +218,7 @@ export default function Navbar() {
                 >
                   <i className="fa-brands fa-tiktok"></i>
                 </a>
-              </div>
+              </div> */}
 
               {Token && (
                 <>

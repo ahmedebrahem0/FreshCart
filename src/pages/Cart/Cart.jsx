@@ -260,9 +260,9 @@ export default function Cart() {
                           {product.price} EGP
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {(product.price * product.count)} EGP each
+                          {product.price * product.count} EGP each
                         </p>
-                       
+
                         {product.product.priceAfterDiscount && (
                           <div className="space-y-1">
                             <p className="text-xs text-gray-500 line-through">
