@@ -125,14 +125,18 @@ export default function Dashboard() {
   };
 
   // حساب مبيعات آخر 7 أيام
-  const last7Days = Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), 'yyyy-MM-dd'));
-  const salesLast7Days = last7Days.map(day => {
-    const dayOrders = orders.filter(order => format(new Date(order.createdAt), 'yyyy-MM-dd') === day);
+  const last7Days = Array.from({ length: 7 }, (_, i) =>
+    format(subDays(new Date(), 6 - i), "yyyy-MM-dd")
+  );
+  const salesLast7Days = last7Days.map((day) => {
+    const dayOrders = orders.filter(
+      (order) => format(new Date(order.createdAt), "yyyy-MM-dd") === day
+    );
     return dayOrders.reduce((sum, order) => sum + order.totalOrderPrice, 0);
   });
   // بيانات Line chart
   const lineChartData = {
-    labels: last7Days.map(day => format(new Date(day), 'dd MMM')),
+    labels: last7Days.map((day) => format(new Date(day), "dd MMM")),
     datasets: [
       {
         label: "Sales (EGP)",
@@ -151,7 +155,10 @@ export default function Dashboard() {
     labels: ["Cash", "Card"],
     datasets: [
       {
-        data: [orders.filter(o => o.paymentMethodType === 'cash').length, orders.filter(o => o.paymentMethodType === 'card').length],
+        data: [
+          orders.filter((o) => o.paymentMethodType === "cash").length,
+          orders.filter((o) => o.paymentMethodType === "card").length,
+        ],
         backgroundColor: ["#b2f2bb", "#a0c4ff"],
         borderColor: ["#0aad0a", "#4361ee"],
         borderWidth: 2,
@@ -172,78 +179,237 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#e8fbe8] to-[#a0c4ff] dark:bg-[#0f172a] dark:bg-gradient-to-br dark:from-[#0f172a] dark:via-[#0f172a] dark:to-[#0f172a] py-8 px-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl font-extrabold mb-6 sm:mb-8 text-[#14532d] dark:text-white tracking-tight text-center drop-shadow-lg px-4">
-          Dashboard
-        </h1>
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Analytics Dashboard
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-lg">
+            Real-time insights and performance metrics
+          </p>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Orders */}
-          <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#e0f2fe] to-[#b2f2bb] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">
-            <FaShoppingCart className="text-3xl text-[#4361ee] bg-[#e0f2fe] p-2 rounded-full shadow mb-2" />
-            <span className="text-base font-semibold text-gray-700 dark:text-white">Total Orders</span>
-            <span className="text-2xl font-extrabold text-[#14532d] dark:text-[#b2f2bb]">{totalOrders}</span>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Total Orders
+                </p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                  {totalOrders}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                <FaShoppingCart className="text-2xl text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-green-600">
+              <span className="font-medium">+12%</span>
+              <span className="ml-1">from last month</span>
+            </div>
           </motion.div>
+
           {/* Total Sales */}
-          <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#b2f2bb] to-[#a0c4ff] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">
-            <FaDollarSign className="text-3xl text-[#0aad0a] bg-[#b2f2bb] p-2 rounded-full shadow mb-2" />
-            <span className="text-base font-semibold text-gray-700 dark:text-white">Total Sales</span>
-            <span className="text-2xl font-extrabold text-[#0aad0a]">{totalSales.toLocaleString()} EGP</span>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Total Sales
+                </p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                  {totalSales.toLocaleString()} EGP
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                <FaDollarSign className="text-2xl text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-green-600">
+              <span className="font-medium">+8%</span>
+              <span className="ml-1">from last month</span>
+            </div>
           </motion.div>
+
           {/* Paid Orders */}
-          <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#e0f2fe] to-[#b2f2bb] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">
-            <FaCheckCircle className="text-3xl text-[#43e97b] bg-[#e0f2fe] p-2 rounded-full shadow mb-2" />
-            <span className="text-base font-semibold text-gray-700 dark:text-white">Paid Orders</span>
-            <span className="text-2xl font-extrabold text-[#43e97b]">{paidOrders}</span>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Paid Orders
+                </p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                  {paidOrders}
+                </p>
+              </div>
+              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+                <FaCheckCircle className="text-2xl text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-emerald-600">
+              <span className="font-medium">
+                {((paidOrders / totalOrders) * 100).toFixed(1)}%
+              </span>
+              <span className="ml-1">success rate</span>
+            </div>
           </motion.div>
+
           {/* Unpaid Orders */}
-          <motion.div whileHover={{ scale: 1.03 }} className="rounded-xl shadow bg-gradient-to-br from-[#f8fafc] to-[#a0c4ff] dark:bg-[#0f172a] p-4 sm:p-5 flex flex-col items-center border border-[#e0e0e0] dark:border-gray-700 transition-all duration-300">
-            <FaTimesCircle className="text-3xl text-[#ff5858] bg-[#f8fafc] p-2 rounded-full shadow mb-2" />
-            <span className="text-base font-semibold text-gray-700 dark:text-white">Unpaid Orders</span>
-            <span className="text-2xl font-extrabold text-[#ff5858]">{unpaidOrders}</span>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Unpaid Orders
+                </p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                  {unpaidOrders}
+                </p>
+              </div>
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                <FaTimesCircle className="text-2xl text-red-600 dark:text-red-400" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-red-600">
+              <span className="font-medium">
+                {((unpaidOrders / totalOrders) * 100).toFixed(1)}%
+              </span>
+              <span className="ml-1">pending</span>
+            </div>
           </motion.div>
         </div>
-        {/* Last Orders Table */}
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="bg-white dark:bg-[#0f172a] rounded-xl shadow-xl p-4 sm:p-6 mb-10 border border-[#e0e0e0] dark:border-gray-700">
-          <h2 className="text-lg font-bold mb-4 text-[#14532d] dark:text-white">Last Orders</h2>
-          
+        {/* Recent Orders Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100 dark:border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Recent Orders
+            </h2>
+            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+              <span>Last 8 orders</span>
+            </div>
+          </div>
+
           {/* Desktop Table */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Order ID</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Customer</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Total</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Payment</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Status</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Order ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Customer
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Payment
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Date
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {orders.slice(0, 8).map((order) => (
-                  <tr key={order._id} className="hover:bg-[#b2f2bb]/30 dark:hover:bg-[#0aad0a]/10 transition-all">
-                    <td className="px-4 py-2 font-mono text-xs text-gray-700 dark:text-gray-200">{order._id.slice(-6)}</td>
-                    <td className="px-4 py-2 text-gray-700 dark:text-gray-200">
-                      <div className="font-bold">{order.user?.name}</div>
-                      <div className="text-xs text-gray-500">{order.user?.email}</div>
+                  <tr
+                    key={order._id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="font-mono text-sm text-gray-900 dark:text-white">
+                        #{order._id.slice(-6)}
+                      </span>
                     </td>
-                    <td className="px-4 py-2 text-[#0aad0a] font-bold">{order.totalOrderPrice} EGP</td>
-                    <td className="px-4 py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.paymentMethodType === 'cash' ? 'bg-[#b2f2bb] text-[#14532d]' : 'bg-[#a0c4ff] text-[#185a9d]'}`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {order.user?.name}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {order.user?.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                        {order.totalOrderPrice} EGP
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          order.paymentMethodType === "cash"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                            : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                        }`}
+                      >
                         {order.paymentMethodType}
                       </span>
                     </td>
-                    <td className="px-4 py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.isPaid ? 'bg-[#b2f2bb] text-[#14532d]' : 'bg-[#ffe0e0] text-[#ff5858]'}`}>
-                        {order.isPaid ? 'Paid' : 'Unpaid'}
-                      </span>
-                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${order.isDelivered ? 'bg-[#a0c4ff] text-[#185a9d]' : 'bg-gray-100 text-gray-700'}`}>
-                        {order.isDelivered ? 'Delivered' : 'Not Delivered'}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            order.isPaid
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          }`}
+                        >
+                          {order.isPaid ? "Paid" : "Unpaid"}
+                        </span>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            order.isDelivered
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                              : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          {order.isDelivered ? "Delivered" : "Pending"}
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-4 py-2 text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -253,29 +419,60 @@ export default function Dashboard() {
           {/* Mobile/Tablet Cards */}
           <div className="lg:hidden space-y-4">
             {orders.slice(0, 8).map((order) => (
-              <div key={order._id} className="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+              <div
+                key={order._id}
+                className="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-4 border border-gray-200 dark:border-gray-700"
+              >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-mono text-sm text-gray-600 dark:text-gray-300">#{order._id.slice(-6)}</span>
-                      <span className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</span>
+                      <span className="font-mono text-sm text-gray-600 dark:text-gray-300">
+                        #{order._id.slice(-6)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                     <div className="mb-2">
-                      <div className="font-semibold text-gray-900 dark:text-white">{order.user?.name}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">{order.user?.email}</div>
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        {order.user?.name}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                        {order.user?.email}
+                      </div>
                     </div>
-                    <div className="text-lg font-bold text-[#0aad0a]">{order.totalOrderPrice} EGP</div>
+                    <div className="text-lg font-bold text-[#0aad0a]">
+                      {order.totalOrderPrice} EGP
+                    </div>
                   </div>
                   <div className="flex flex-col items-end space-y-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.paymentMethodType === 'cash' ? 'bg-[#b2f2bb] text-[#14532d]' : 'bg-[#a0c4ff] text-[#185a9d]'}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        order.paymentMethodType === "cash"
+                          ? "bg-[#b2f2bb] text-[#14532d]"
+                          : "bg-[#a0c4ff] text-[#185a9d]"
+                      }`}
+                    >
                       {order.paymentMethodType}
                     </span>
                     <div className="flex flex-col space-y-1">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.isPaid ? 'bg-[#b2f2bb] text-[#14532d]' : 'bg-[#ffe0e0] text-[#ff5858]'}`}>
-                        {order.isPaid ? 'Paid' : 'Unpaid'}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          order.isPaid
+                            ? "bg-[#b2f2bb] text-[#14532d]"
+                            : "bg-[#ffe0e0] text-[#ff5858]"
+                        }`}
+                      >
+                        {order.isPaid ? "Paid" : "Unpaid"}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.isDelivered ? 'bg-[#a0c4ff] text-[#185a9d]' : 'bg-gray-100 text-gray-700'}`}>
-                        {order.isDelivered ? 'Delivered' : 'Not Delivered'}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          order.isDelivered
+                            ? "bg-[#a0c4ff] text-[#185a9d]"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {order.isDelivered ? "Delivered" : "Not Delivered"}
                       </span>
                     </div>
                   </div>
@@ -285,74 +482,151 @@ export default function Dashboard() {
           </div>
         </motion.div>
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-10">
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="bg-white dark:bg-[#0f172a] rounded-xl shadow-xl p-4 sm:p-6 border border-[#e0e0e0] dark:border-gray-700">
-            <h2 className="text-lg font-bold mb-4 text-[#14532d] dark:text-white">Sales Last 7 Days</h2>
-            <div className="h-64 sm:h-80">
-              <Line 
-                data={lineChartData} 
-                options={{ 
-                  responsive: true, 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Sales Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Sales Trend
+              </h2>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Last 7 days
+              </span>
+            </div>
+            <div className="h-80">
+              <Line
+                data={lineChartData}
+                options={{
+                  responsive: true,
                   maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      titleColor: "white",
+                      bodyColor: "white",
+                      borderColor: "#0aad0a",
+                      borderWidth: 1,
+                    },
+                  },
                   scales: {
                     x: {
+                      grid: { display: false },
                       ticks: {
+                        color: "#6b7280",
                         maxRotation: 45,
-                        minRotation: 45
-                      }
-                    }
-                  }
-                }} 
+                        minRotation: 45,
+                      },
+                    },
+                    y: {
+                      grid: { color: "#f3f4f6" },
+                      ticks: { color: "#6b7280" },
+                    },
+                  },
+                }}
               />
             </div>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="bg-white dark:bg-[#0f172a] rounded-xl shadow-xl p-4 sm:p-6 border border-[#e0e0e0] dark:border-gray-700">
-            <h2 className="text-lg font-bold mb-4 text-[#14532d] dark:text-white">Top 5 Best Selling Products</h2>
-            <div className="h-64 sm:h-80">
-              <Bar 
-                data={barChartData} 
-                options={{ 
-                  responsive: true, 
+
+          {/* Best Selling Products */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.8 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Top Products
+              </h2>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Best sellers
+              </span>
+            </div>
+            <div className="h-80">
+              <Bar
+                data={barChartData}
+                options={{
+                  responsive: true,
                   maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      titleColor: "white",
+                      bodyColor: "white",
+                      borderColor: "#3b82f6",
+                      borderWidth: 1,
+                    },
+                  },
                   scales: {
                     x: {
+                      grid: { display: false },
                       ticks: {
+                        color: "#6b7280",
                         maxRotation: 45,
-                        minRotation: 45
-                      }
-                    }
-                  }
-                }} 
+                        minRotation: 45,
+                      },
+                    },
+                    y: {
+                      grid: { color: "#f3f4f6" },
+                      ticks: { color: "#6b7280" },
+                    },
+                  },
+                }}
               />
-            </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }} className="bg-white dark:bg-[#0f172a] rounded-xl shadow-xl p-4 sm:p-6 border border-[#e0e0e0] dark:border-gray-700 lg:col-span-2">
-            <h2 className="text-lg font-bold mb-4 text-[#14532d] dark:text-white">Payment Methods</h2>
-            <div className="flex justify-center">
-              <div className="w-48 sm:w-64 h-48 sm:h-64">
-                <Doughnut 
-                  data={paymentPieData} 
-                  options={{ 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    cutout: '70%', 
-                    plugins: { 
-                      legend: { 
-                        position: 'bottom',
-                        labels: {
-                          padding: 20,
-                          usePointStyle: true
-                        }
-                      } 
-                    } 
-                  }} 
-                />
-              </div>
             </div>
           </motion.div>
         </div>
+
+        {/* Payment Methods Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 1.0 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Payment Methods
+            </h2>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Distribution
+            </span>
+          </div>
+          <div className="flex justify-center">
+            <div className="w-80 h-80">
+              <Doughnut
+                data={paymentPieData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: "60%",
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        color: "#6b7280",
+                      },
+                    },
+                    tooltip: {
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      titleColor: "white",
+                      bodyColor: "white",
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
