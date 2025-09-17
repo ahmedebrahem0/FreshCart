@@ -173,7 +173,13 @@ const setLoadingFor = (pid, dir, v) =>
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                              {product?.product?.title}
+                              {product?.product?.title
+                                ?.split(" ")
+                                .slice(0, 5)
+                                .join(" ") + 
+                                (product?.product?.title?.split(" ").length > 5
+                                  ? " ..."
+                                  : "")}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
                               ID:{" "}
