@@ -336,7 +336,7 @@ export default function Home() {
   const categoryBrandMapping = {
     "Men's Fashion": ["Puma", "Jack & Jones", "Adidas", "LC Waikiki"],
     "Women's Fashion": ["Defacto"],
-    Electronics: ["Sony", "Canon", "Samsung","Dell"],
+    Electronics: ["Sony", "Canon", "Samsung", "Dell"],
   };
 
   // Filter brands based on selected category
@@ -750,7 +750,7 @@ export default function Home() {
                 </div>
               </motion.div>
             )}
-          </motion.div> 
+          </motion.div>
           {/* Products Display */}
           <div className="">
             <div className="flex justify-between items-center mb-4">
