@@ -23,7 +23,7 @@ export const authService = {
 
   // Reset Password
   resetPassword: (resetData) => {
-    return api.post('/auth/resetPassword', resetData);
+    return api.put('/auth/resetPassword', resetData);
   },
 
   // Change Password
