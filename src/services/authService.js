@@ -28,7 +28,8 @@ export const authService = {
 
   // Change Password
   changePassword: (passwordData) => {
-    return api.put('/auth/changeMyPassword', passwordData);
+    //هنا التغيير
+    return api.put('/users/changeMyPassword', passwordData);
   },
 
   // Get User Profile
