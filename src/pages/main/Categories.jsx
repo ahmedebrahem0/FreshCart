@@ -18,7 +18,7 @@ export default function Categories() {
     return (
       <div className="container w-[80%] mx-auto my-4">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-2 gap-3">
-          {Array(8) // عرض 8 بطاقات وهمية أثناء التحميل
+          {Array(8) 
             .fill(0)
             .map((_, index) => (
               <SkeletonCard key={index} />
