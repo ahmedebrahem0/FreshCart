@@ -27,6 +27,7 @@ export default function ChangeMyPassword() {
       authService
         .changePassword(values)
         .then((data) => {
+          console.log("changePassword data", data);
           setLoading(false);
           toast.success("Password updated successfully");
           setTimeout(() => {
@@ -43,7 +44,7 @@ export default function ChangeMyPassword() {
     validationSchema: changePasswordValidationSchema,
 
     validate: (errors) => {
-      console.log(errors);
+      console.log("error in changepass", errors);
     },
   });
 

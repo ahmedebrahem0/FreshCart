@@ -71,7 +71,7 @@ export const changePasswordValidationSchema = yup.object().shape({
   currentPassword: yup
     .string()
     .required("Current password is required"),
-  newPassword: yup
+  password: yup
     .string()
     .required("New password is required")
     .min(3, "Password must be at least 3 characters")
@@ -79,7 +79,7 @@ export const changePasswordValidationSchema = yup.object().shape({
   rePassword: yup
     .string()
     .required("Re-entering password is required")
-    .oneOf([yup.ref("newPassword")], "Passwords must match"),
+    .oneOf([yup.ref("password")], "Passwords must match"),
 });
 
 // Payment Validation Schema

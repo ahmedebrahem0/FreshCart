@@ -5,7 +5,9 @@ const API_BASE_URL = 'https://ecommerce.routemisr.com/api/v1';
 
 // Create axios instance
 const api = axios.create({
+
   baseURL: API_BASE_URL,
+  //هنا ممكن نحط ال token عشان ابعتو مع كلو 
   timeout: 10000,
 });
 
