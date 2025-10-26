@@ -21,7 +21,7 @@ export default function Brands() {
     queryFn: productService.getAllBrands,
   });
 
-
+// Selected brand state
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
