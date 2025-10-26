@@ -7,7 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output directories
+# احذف dist بس سيب docs
 dist
 dist-ssr
 *.local
@@ -23,4 +27,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Vercel / Netlify configs
 .vercel
+
+# ⚠️ ملاحظات:
+# احنا مش هنضيف docs هنا علشان نرفعه على GitHub Pages

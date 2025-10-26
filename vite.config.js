@@ -2,12 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  base: "/FreshCart/", // اسم الريبو
+  base: "/FreshCart/",
   plugins: [react()],
   build: {
-    outDir: "docs", // اخلي البيلد يطلع في docs
-    emptyOutDir: true,
+    outDir: "docs",
     assetsDir: "assets",
+    emptyOutDir: true,
   },
-  server: { port: 3000 },
+  server: { port: 3000, open: true },
 });
