@@ -32,7 +32,10 @@ class ApiErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('API Error caught by boundary:', error, errorInfo);
+    // Only log error in development mode
+    if (process.env.NODE_ENV === 'development') {
+      console.error('API Error caught by boundary:', error, errorInfo);
+    }
     
     // Increment retry count
     this.setState(prevState => ({

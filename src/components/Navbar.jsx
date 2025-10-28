@@ -49,7 +49,12 @@ export default function Navbar() {
         try {
           setUserProfile(JSON.parse(savedUserProfile));
         } catch (error) {
-          console.error("Error parsing saved user profile:", error);
+          // Only log error in development mode
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Error parsing saved user profile:", error);
+          }
+          // Clear corrupted data
+          localStorage.removeItem("userProfile");
         }
       }
 
@@ -57,6 +62,7 @@ export default function Navbar() {
       axios
         .get(`https://ecommerce.routemisr.com/api/v1/users/profile`, {
           headers: { token: authToken },
+          timeout: 10000, // 10 seconds timeout
         })
         .then((res) => {
           const apiUserProfile = res.data?.data;
@@ -66,16 +72,39 @@ export default function Navbar() {
             localStorage.setItem("userProfile", JSON.stringify(apiUserProfile));
           }
         })
-        .catch((error) => console.error("Error fetching user profile:", error));
+        .catch((error) => {
+          // Only log error in development mode
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Error fetching user profile:", error);
+          }
+          // Clear invalid token if it's a 401 error
+          if (error.response?.status === 401) {
+            localStorage.removeItem("tkn");
+            localStorage.removeItem("userProfile");
+            setToken(null);
+          }
+        });
 
       // جلب طلبات المستخدم (يتطلب userId)
       if (decodedToken?.id) {
         axios
           .get(
-            `https://ecommerce.routemisr.com/api/v1/orders/user/${decodedToken.id}`
+            `https://ecommerce.routemisr.com/api/v1/orders/user/${decodedToken.id}`,
+            { timeout: 10000 } // 10 seconds timeout
           )
           .then((res) => setUserOrders(res.data))
-          .catch((error) => console.error("Error fetching orders:", error));
+          .catch((error) => {
+            // Only log error in development mode
+            if (process.env.NODE_ENV === 'development') {
+              console.error("Error fetching orders:", error);
+            }
+            // Clear invalid token if it's a 401 error
+            if (error.response?.status === 401) {
+              localStorage.removeItem("tkn");
+              localStorage.removeItem("userProfile");
+              setToken(null);
+            }
+          });
       }
     } else {
       // إعادة تعيين البيانات عند تسجيل الخروج

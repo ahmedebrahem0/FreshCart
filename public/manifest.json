@@ -10,8 +10,9 @@
   "icons": [
     {
       "src": "/FreshCart/vite.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "categories": ["shopping", "food", "business"],

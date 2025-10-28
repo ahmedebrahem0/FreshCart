@@ -5,7 +5,10 @@ export const useErrorHandler = () => {
   const [errors, setErrors] = useState([]);
 
   const handleError = useCallback((error, context = '') => {
-    console.error(`Error in ${context}:`, error);
+    // Only log error in development mode
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Error in ${context}:`, error);
+    }
 
     let errorMessage = 'An unexpected error occurred';
     let errorType = 'error';
