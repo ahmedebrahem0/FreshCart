@@ -21,7 +21,7 @@ export default function Brands() {
     queryFn: productService.getAllBrands,
   });
 
-// Selected brand state
+  // Selected brand state
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -339,7 +339,7 @@ export default function Brands() {
                 key={p?._id || i}
                 className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-xl shadow-lg hover:shadow-2xl overflow-hidden group border dark:border-gray-600 transform hover:scale-105 transition-all duration-300"
               >
-                <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                <div className="w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                   {p?.imageCover ? (
                     <img
                       src={p.imageCover}

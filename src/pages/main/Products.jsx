@@ -149,7 +149,7 @@ function ProductCard({
         className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg dark:shadow-xl dark:shadow-slate-900/30 hover:shadow-2xl dark:hover:shadow-2xl dark:hover:shadow-slate-900/50 transition-all duration-300 overflow-hidden group border dark:border-slate-600/20"
       >
         <div className="flex">
-          <div className="relative w-64 h-48 flex-shrink-0">
+          <div className="relative w-64 aspect-[4/3] flex-shrink-0">
             <img
               src={product.imageCover}
               alt={product.title}
@@ -474,7 +474,7 @@ export default function Products() {
   const categoryBrandMapping = {
     "Men's Fashion": ["Puma", "Jack & Jones", "Adidas", "LC Waikiki"],
     "Women's Fashion": ["Defacto"],
-    Electronics: ["Sony", "Canon", "Samsung","Dell"],
+    Electronics: ["Sony", "Canon", "Samsung", "Dell"],
   };
 
   // Filter brands based on selected category
@@ -499,7 +499,6 @@ export default function Products() {
     } else {
       // Filter brands based on category mapping and show product count
       const categoryName = categories.find(
-      
         (cat) => cat._id === selectedCategory
       )?.name;
       const allowedBrandNames = categoryBrandMapping[categoryName] || [];

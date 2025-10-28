@@ -1,14 +1,14 @@
-import React from 'react';
-import { FaExclamationTriangle, FaHome, FaRedo } from 'react-icons/fa';
+import React from "react";
+import { FaExclamationTriangle, FaHome, FaRedo } from "react-icons/fa";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
-      error: null, 
+    this.state = {
+      hasError: false,
+      error: null,
       errorInfo: null,
-      showDetails: false 
+      showDetails: false,
     };
   }
 
@@ -19,14 +19,14 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     // Only log error to console in development mode
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error caught by boundary:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error caught by boundary:", error, errorInfo);
     }
-    
+
     // Update state with error details
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
 
     // You can also log the error to an error reporting service here
@@ -34,21 +34,21 @@ class ErrorBoundary extends React.Component {
   }
 
   handleRetry = () => {
-    this.setState({ 
-      hasError: false, 
-      error: null, 
+    this.setState({
+      hasError: false,
+      error: null,
       errorInfo: null,
-      showDetails: false 
+      showDetails: false,
     });
   };
 
   handleGoHome = () => {
-    window.location.href = '/home';
+    window.location.href = "/home";
   };
 
   toggleDetails = () => {
-    this.setState(prevState => ({
-      showDetails: !prevState.showDetails
+    this.setState((prevState) => ({
+      showDetails: !prevState.showDetails,
     }));
   };
 
@@ -69,7 +69,8 @@ class ErrorBoundary extends React.Component {
 
             {/* Error Message */}
             <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-              We're sorry, but something unexpected happened. Our team has been notified and is working to fix the issue.
+              We're sorry, but something unexpected happened. Our team has been
+              notified and is working to fix the issue.
             </p>
 
             {/* Action Buttons */}
@@ -98,7 +99,7 @@ class ErrorBoundary extends React.Component {
                   onClick={this.toggleDetails}
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
                 >
-                  {this.state.showDetails ? 'Hide' : 'Show'} Technical Details
+                  {this.state.showDetails ? "Hide" : "Show"} Technical Details
                 </button>
 
                 {this.state.showDetails && (
@@ -113,7 +114,8 @@ class ErrorBoundary extends React.Component {
                       Component Stack:
                     </h3>
                     <pre className="text-xs text-gray-600 dark:text-gray-300 overflow-auto max-h-32">
-                      {this.state.errorInfo && this.state.errorInfo.componentStack}
+                      {this.state.errorInfo &&
+                        this.state.errorInfo.componentStack}
                     </pre>
                   </div>
                 )}
@@ -135,4 +137,4 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default ErrorBoundary; 
+export default ErrorBoundary;

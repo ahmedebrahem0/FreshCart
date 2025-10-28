@@ -146,7 +146,7 @@ function ProductCard({ product, viewMode }) {
         className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
       >
         <div className="flex">
-          <div className="relative w-64 h-48 flex-shrink-0">
+          <div className="relative w-64 aspect-[4/3] flex-shrink-0">
             <img
               src={product.imageCover}
               alt={product.title}

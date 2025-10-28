@@ -1,16 +1,18 @@
-import React from 'react';
-import ComponentErrorBoundary from './ComponentErrorBoundary';
+import React from "react";
+import ComponentErrorBoundary from "./ComponentErrorBoundary";
 
 const ProductCard = ({ product }) => {
   if (!product) {
-    throw new Error('Product data is required');
+    throw new Error("Product data is required");
   }
 
   return (
-    <ComponentErrorBoundary 
+    <ComponentErrorBoundary
       fallback={
         <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-center">
-          <p className="text-gray-500 dark:text-gray-400">Product unavailable</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Product unavailable
+          </p>
         </div>
       }
     >
@@ -19,9 +21,9 @@ const ProductCard = ({ product }) => {
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-48 object-cover"
+            className="w-full aspect-[4/3] object-cover"
             onError={(e) => {
-              e.target.src = '/placeholder-image.jpg';
+              e.target.src = "/placeholder-image.jpg";
             }}
           />
           {product.discount && (
@@ -30,32 +32,33 @@ const ProductCard = ({ product }) => {
             </div>
           )}
         </div>
-        
+
         <div className="p-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
             {product.title}
           </h3>
-          
+
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
             {product.description}
           </p>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-xl font-bold text-green-600 dark:text-green-400">
                 ${product.price}
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-sm text-gray-500 line-through">
-                  ${product.originalPrice}
-                </span>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <span className="text-sm text-gray-500 line-through">
+                    ${product.originalPrice}
+                  </span>
+                )}
             </div>
-            
+
             <div className="flex items-center space-x-1">
               <span className="text-yellow-500">★</span>
               <span className="text-sm text-gray-600 dark:text-gray-300">
-                {product.rating || 'N/A'}
+                {product.rating || "N/A"}
               </span>
             </div>
           </div>
@@ -65,4 +68,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard; 
+export default ProductCard;

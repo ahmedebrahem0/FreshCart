@@ -18,7 +18,7 @@ export default function Categories() {
     return (
       <div className="container w-[80%] mx-auto my-4">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-2 gap-3">
-          {Array(8) 
+          {Array(8)
             .fill(0)
             .map((_, index) => (
               <SkeletonCard key={index} />
@@ -50,7 +50,7 @@ export default function Categories() {
                 <img
                   src={category.image}
                   alt={category.name}
-                  className="w-full h-80 object-cover rounded-md transform group-hover:rotate-x-6 group-hover:rotate-y-6 group-hover:scale-110 transition-all duration-300 ease-in-out"
+                  className="w-full aspect-[4/3] object-cover rounded-md transform group-hover:rotate-x-6 group-hover:rotate-y-6 group-hover:scale-110 transition-all duration-300 ease-in-out"
                   loading="lazy" // تحسين أداء التحميل
                 />
               </div>
@@ -64,4 +64,3 @@ export default function Categories() {
     </div>
   );
 }
-

@@ -300,7 +300,7 @@ export default function ProductDetails() {
                       <img
                         src={image}
                         alt={`${product.title} - Image ${index + 1}`}
-                        className="w-full h-96 lg:h-[500px] object-cover rounded-xl"
+                        className="w-full aspect-[4/3] lg:aspect-[3/2] object-cover rounded-xl"
                       />
                       {badgeInfo && index === currentImageIndex && (
                         <div

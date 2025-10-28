@@ -84,7 +84,7 @@ export default function HomeCategory() {
             >
               <img
                 src={category.image}
-                className="h-32 w-full object-cover rounded-md border-2 border-gray-300"
+                className="w-full aspect-[4/3] object-cover rounded-md border-2 border-gray-300"
                 alt={category.name}
               />
               <h6 className="text-center text-sm font-medium mt-2 text-gray-700 dark:text-white">
@@ -95,4 +95,3 @@ export default function HomeCategory() {
     </Slider>
   );
 }
-

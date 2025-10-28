@@ -12,42 +12,82 @@ import img6 from "../../src/assets/images/slider-2.jpeg";
 
 export default function HomeSlider() {
   var settings = {
-    dots: true , 
-    infinite: true, 
+    dots: true,
+    infinite: true,
     speed: 500,
-    slidesToShow: 1, 
-    slidesToScroll: 1, 
-    arrows: false, 
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
     autoplay: true,
-    autoplaySpeed: 3000, 
+    autoplaySpeed: 3000,
     fade: false, // تعطيل تأثير التلاشي
-    cssEase: "cubic-bezier(0.4, 0, 0.2, 1)", 
+    cssEase: "cubic-bezier(0.4, 0, 0.2, 1)",
   };
 
   return (
-
     <div className="slider-container ">
       <Slider {...settings}>
         <div>
-          <img src={img5} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img5}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Fresh products"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
         <div>
-          <img src={img1} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img1}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Quality groceries"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
         <div>
-          <img src={img3} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img3}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Fresh vegetables"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
         <div>
-          <img src={img4} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img4}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Organic products"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
         <div>
-          <img src={img2} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img2}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Healthy food"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
         <div>
-          <img src={img6} className="h-80 w-full rounded-md" alt="" />
+          <img
+            src={img6}
+            className="w-full aspect-[16/9] object-cover rounded-md"
+            alt="Premium quality"
+            loading="lazy"
+            width="896"
+            height="504"
+          />
         </div>
       </Slider>
     </div>
   );
 }
-
