@@ -1,0 +1,20 @@
+{
+  "name": "Fresh Cart - متجر البقالة الإلكتروني",
+  "short_name": "Fresh Cart",
+  "description": "متجر البقالة الإلكتروني الأفضل في مصر. تسوق منتجات طازجة وعالية الجودة مع توصيل سريع وآمن.",
+  "start_url": "/FreshCart/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/FreshCart/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["shopping", "food", "business"],
+  "lang": "ar",
+  "dir": "rtl"
+}
