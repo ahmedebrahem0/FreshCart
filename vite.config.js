@@ -9,5 +9,9 @@ export default defineConfig({
     assetsDir: "assets",
     emptyOutDir: true,
   },
-  server: { port: 3000, open: true },
+  server: {
+    port: 3000,
+    open: true,
+    host: true,
+  },
 });
