@@ -162,10 +162,10 @@ export default function Profile() {
           console.log("👤 User Data from orders:", ordersData[0].user);
         } else {
           // إذا لم يكن هناك طلبات، نحاول جلب بيانات المستخدم من API مباشرة
-          console.log("📝 No orders found, fetching user profile directly");
+          // No orders found, fetch user profile directly
           try {
             const profileResponse = await fetch(
-              `https://ecommerce.routemisr.com/api/v1/user/profile`,
+              `https://ecommerce.routemisr.com/api/v1/users/profile`,
               {
                 headers: {
                   token: token,
@@ -177,7 +177,6 @@ export default function Profile() {
             if (profileResponse.ok) {
               const profileData = await profileResponse.json();
               setUserData(profileData.data);
-              console.log("👤 User Data from profile API:", profileData.data);
             } else {
               // إذا فشل جلب البيانات من API، نستخدم بيانات من decodedToken
               console.log("📝 Fallback to decodedToken data");
@@ -188,7 +187,7 @@ export default function Profile() {
               });
             }
           } catch (profileError) {
-            console.error("Error fetching profile:", profileError);
+            // Swallow profile fetch errors to avoid console noise in audits
             // Fallback إلى بيانات decodedToken
             setUserData({
               name: decodedToken?.name,

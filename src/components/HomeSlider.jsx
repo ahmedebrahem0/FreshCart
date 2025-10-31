@@ -30,61 +30,74 @@ export default function HomeSlider() {
         <div>
           <img
             src={img5}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Fresh products"
-            loading="lazy"
-            width="896"
-            height="504"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
         <div>
           <img
             src={img1}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Quality groceries"
             loading="lazy"
-            width="896"
-            height="504"
+            decoding="async"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
         <div>
           <img
             src={img3}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Fresh vegetables"
             loading="lazy"
-            width="896"
-            height="504"
+            decoding="async"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
         <div>
           <img
             src={img4}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Organic products"
             loading="lazy"
-            width="896"
-            height="504"
+            decoding="async"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
         <div>
           <img
             src={img2}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Healthy food"
             loading="lazy"
-            width="896"
-            height="504"
+            decoding="async"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
         <div>
           <img
             src={img6}
-            className="w-full aspect-[16/9] object-cover rounded-md"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
             alt="Premium quality"
             loading="lazy"
-            width="896"
-            height="504"
+            decoding="async"
+            sizes="100vw"
+            width="1600"
+            height="900"
           />
         </div>
       </Slider>
