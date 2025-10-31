@@ -1,3 +1,4 @@
+// src/context/CartContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AuthContext } from "./AuthContext";
@@ -15,164 +16,152 @@ export default function CartContextProvider({ children }) {
   const [CartId, setCartId] = useState(null);
   const [heart, setHeart] = useState(null);
   const [isCartLoading, setIsCartLoading] = useState(false);
+
   const { Token } = useContext(AuthContext);
-  // console.log(Token);
+  const isDev = import.meta.env.DEV;
+
   useEffect(() => {
     if (Token) {
+      // عند تسجيل الدخول: حمّل القيم الأساسية
       getUserWishlist();
       getUserCart();
     } else {
-      clearUI(); // إعادة تعيين الحالة إذا لم يكن هناك مستخدم مسجل دخوله
+      // لو مفيش توكن: صفّي الـUI
+      clearUI();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Token]);
 
   function clearUI() {
     setAddProductToCart(null);
+    setAddProductToWishlist(null);
     setNumOfCartItems(0);
+    setNumOfWishlist(0);
     setTotalCartPrice(0);
     setCartId(null);
-    // setNumOfWishlist(0); // إعادة تعيين عدد العناصر في الـ Wishlist
   }
 
+  // ======================
+  // Cart actions
+  // ======================
   async function addProduct(pId) {
-    setShowing(false);
-    return cartService
-      .addToCart(pId)
-      .then((res) => {
-        setAddProductToCart(res.data.data.products);
-        setNumOfCartItems(res.data.numOfCartItems);
-        setTotalCartPrice(res.data.data.totalCartPrice);
-        setShowing(true);
-        getUserCart();
-        return { res, status: true };
-      })
-      .catch((error) => {
-        setShowing(true);
-        return { error, status: false };
-      });
+    try {
+      setShowing(false);
+      const res = await cartService.addToCart(pId);
+      setAddProductToCart(res.data.data.products);
+      setNumOfCartItems(res.data.numOfCartItems);
+      setTotalCartPrice(res.data.data.totalCartPrice);
+      setShowing(true);
+      // تأكيد التزامن من المصدر
+      await getUserCart();
+      return { res, status: true };
+    } catch (error) {
+      setShowing(true);
+      if (isDev) console.warn("addProduct failed:", error?.message || error);
+      return { error, status: false };
+    }
   }
 
   async function handelButton(Id, newCount) {
-    return cartService
-      .updateCartItem(Id, newCount)
-      .then((res) => {
-        setAddProductToCart(res.data.data.products);
-        setNumOfCartItems(res.data.numOfCartItems);
-        setTotalCartPrice(res.data.data.totalCartPrice);
-        return true;
-      })
-      .catch((error) => {
-        console.log(error);
-        return false;
-      });
+    try {
+      const res = await cartService.updateCartItem(Id, newCount);
+      setAddProductToCart(res.data.data.products);
+      setNumOfCartItems(res.data.numOfCartItems);
+      setTotalCartPrice(res.data.data.totalCartPrice);
+      return true;
+    } catch (error) {
+      if (isDev)
+        console.warn("updateCartItem failed:", error?.message || error);
+      return false;
+    }
   }
 
   async function DeleteProduct(productId) {
-    return cartService
-      .removeFromCart(productId)
-      .then((res) => {
-        setAddProductToCart(res.data.data.products);
-        setNumOfCartItems(res.data.numOfCartItems);
-        setTotalCartPrice(res.data.data.totalCartPrice);
-        return true;
-      })
-      .catch((error) => {
-        console.log(error);
-        return false;
-      });
-  }
-  async function DeleteFromWishlist(wishListId) {
-    return cartService
-      .removeFromWishlist(wishListId)
-      .then((res) => {
-        setNumOfWishlist(numOfWishlist);
-
-        return true;
-      })
-      .catch((error) => {
-        console.log(error);
-        return false;
-      });
+    try {
+      const res = await cartService.removeFromCart(productId);
+      setAddProductToCart(res.data.data.products);
+      setNumOfCartItems(res.data.numOfCartItems);
+      setTotalCartPrice(res.data.data.totalCartPrice);
+      return true;
+    } catch (error) {
+      if (isDev)
+        console.warn("removeFromCart failed:", error?.message || error);
+      return false;
+    }
   }
 
   async function RemoveItems() {
-    return cartService
-      .clearCart()
-      .then((res) => {
-        setAddProductToCart(null);
-        setNumOfCartItems(0);
-        setTotalCartPrice(0);
-        return true;
-      })
-      .catch((error) => {
-        console.log(error);
-        return false;
-      });
+    try {
+      await cartService.clearCart();
+      setAddProductToCart(null);
+      setNumOfCartItems(0);
+      setTotalCartPrice(0);
+      return true;
+    } catch (error) {
+      if (isDev) console.warn("clearCart failed:", error?.message || error);
+      return false;
+    }
   }
 
   async function getUserCart() {
-    setIsCartLoading(true);
-    return cartService
-      .getUserCart()
-      .then((res) => {
-        setAddProductToCart(res.data.data.products);
-        setNumOfCartItems(res.data.numOfCartItems);
-        setTotalCartPrice(res.data.data.totalCartPrice);
-        setCartId(res.data.data._id);
-        setShowing(true);
-        setIsCartLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsCartLoading(false);
-      });
+    try {
+      setIsCartLoading(true);
+      const res = await cartService.getUserCart();
+      setAddProductToCart(res.data.data.products);
+      setNumOfCartItems(res.data.numOfCartItems);
+      setTotalCartPrice(res.data.data.totalCartPrice);
+      setCartId(res.data.data._id);
+      setShowing(true);
+    } catch (error) {
+      if (isDev) console.warn("getUserCart failed:", error?.message || error);
+    } finally {
+      setIsCartLoading(false);
+    }
   }
 
+  // ======================
+  // Wishlist actions
+  // ======================
   async function handelWishlist(WishlistId) {
-    // console.log("WishlistId hena", WishlistId);
-    const WishlistIdCode = WishlistId;
-    return cartService
-      .addToWishlist(WishlistId)
-      .then((res) => {
-        // toast.success(res.data.message);
-        console.log("res from handel ", res);
-        if (WishlistIdCode === WishlistId) {
-          return { res, status: true };
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response?.data?.message || "Something went wrong");
-        return { error, status: false };
-      });
+    try {
+      const res = await cartService.addToWishlist(WishlistId);
+      // حدّث من المصدر بدل زيادات محلية
+      await getUserWishlist();
+      return { res, status: true };
+    } catch (error) {
+      // Toast للمستخدم بدل طباعة error في الإنتاج
+      toast.error(error?.response?.data?.message || "Something went wrong");
+      if (isDev) console.warn("addToWishlist failed:", error?.message || error);
+      return { error, status: false };
+    }
+  }
+
+  async function DeleteFromWishlist(wishListId) {
+    try {
+      const res = await cartService.removeFromWishlist(wishListId);
+      // إعادة تحميل الـWishlist لضمان العداد والقائمة صحيحة
+      await getUserWishlist();
+      return true;
+    } catch (error) {
+      if (isDev)
+        console.warn("removeFromWishlist failed:", error?.message || error);
+      return false;
+    }
   }
 
   async function getUserWishlist() {
-    return await cartService
-      .getUserWishlist()
-      .then((res) => {
-        setAddProductToWishlist(res.data.data);
-
-        const newWishlistCount = res.data.count;
-        // console.log(newWishlistCount);
-        if (newWishlistCount !== 0 && newWishlistCount === numOfWishlist) {
-          // toast.error("already added"); // إزالة الرسالة المزعجة
-          setNumOfWishlist(newWishlistCount);
-          setHeart(null);
-          // console.log('then')
-          return { res, newWishlistCount };
-        } else {
-          // console.log("else me");
-          setNumOfWishlist((prev) => prev + 1);
-          setNumOfWishlist(newWishlistCount);
-          // console.log("catch");
-          // console.log(prev);
-          return false;
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        return false;
-      });
+    try {
+      const res = await cartService.getUserWishlist();
+      const items = res.data.data || [];
+      const count = res.data.count ?? items.length;
+      setAddProductToWishlist(items);
+      setNumOfWishlist(count);
+      return { res, newWishlistCount: count };
+    } catch (error) {
+      if (isDev)
+        console.warn("getUserWishlist failed:", error?.message || error);
+      return false;
+    }
   }
 
   return (

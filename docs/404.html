@@ -2,8 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/FreshCart/vite.svg" />
+
+    <!-- استخدم أيقونة من public بدل svg -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="/FreshCart/manifest.json" />
+<link rel="icon" type="image/png" href="/FreshCart/icons/icon-192.png" />
+<link rel="apple-touch-icon" href="/FreshCart/icons/icon-192.png" />
 
     <!-- SEO Meta Tags -->
     <title>Fresh Cart - Best Online Grocery Store</title>
@@ -18,63 +22,39 @@
     <meta name="author" content="Fresh Cart Team" />
     <meta name="robots" content="index, follow" />
 
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta
-      property="og:title"
-      content="Fresh Cart - Best Online Grocery Store"
-    />
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Fresh Cart - Best Online Grocery Store" />
     <meta
       property="og:description"
       content="The best online grocery store. Shop fresh, high-quality products with fast and secure delivery."
     />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://ahmedebrahem0.github.io/FreshCart/"
-    />
-    <meta
-      property="og:image"
-      content="https://ahmedebrahem0.github.io/FreshCart/src/assets/images/freshcart-logo.svg"
-    />
+    <meta property="og:url" content="https://ahmedebrahem0.github.io/FreshCart/" />
+    <!-- صورة OG لازم تكون من public وبـ URL مطلق -->
+    <meta property="og:image" content="https://ahmedebrahem0.github.io/FreshCart/og-1200x630.png" />
     <meta property="og:site_name" content="Fresh Cart" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Fresh Cart - Best Online Grocery Store"
-    />
+    <meta name="twitter:title" content="Fresh Cart - Best Online Grocery Store" />
     <meta
       name="twitter:description"
       content="The best online grocery store. Shop fresh, high-quality products with fast and secure delivery."
     />
     <meta
       name="twitter:image"
-      content="https://ahmedebrahem0.github.io/FreshCart/src/assets/images/freshcart-logo.svg"
+      content="https://ahmedebrahem0.github.io/FreshCart/og-1200x630.png"
     />
 
-    <!-- Additional SEO Tags -->
+    <!-- Theme / PWA -->
     <meta name="theme-color" content="#10b981" />
     <meta name="msapplication-TileColor" content="#10b981" />
     <link rel="canonical" href="https://ahmedebrahem0.github.io/FreshCart/" />
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/FreshCart/manifest.json" />
 
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="/FreshCart/vite.svg" />
+    <!-- GitHub Pages SPA redirect fixer (rafgraph/spa-github-pages) -->
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      // This script checks to see if a redirect is present in the query string,
-      // converts it back into the correct url and adds it to the
-      // browser's history using window.history.replaceState(...),
-      // which won't cause the browser to attempt to load the new url.
-      // When the single page app is loaded further down in this file,
-      // the correct url will be waiting in the browser's history for
-      // the single page app to route accordingly.
       (function (l) {
         if (l.search[1] === "/") {
           var decoded = l.search
@@ -92,10 +72,11 @@
         }
       })(window.location);
     </script>
-    <script type="module" crossorigin src="/FreshCart/assets/index-Dp4W4btX.js"></script>
-    <link rel="stylesheet" crossorigin href="/FreshCart/assets/index-BCatTI0M.css">
+    <script type="module" crossorigin src="/FreshCart/assets/index-zUgC76Qf.js"></script>
+    <link rel="stylesheet" crossorigin href="/FreshCart/assets/index-CWjStu2N.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
+    <!-- يفضّل يبقى كده؛ Vite هيعالج الـbase أثناء build -->
   </body>
 </html>
