@@ -304,9 +304,12 @@ export default function Home() {
   const [isFetching, setIsFetching] = useState(true); // حالة تحميل أولية
   const { Token } = useContext(AuthContext);
 
-  const { scrollYProgress } = useScroll();
+  // Optimized scroll progress with throttling to reduce forced reflows
+  const { scrollYProgress } = useScroll({
+    layoutEffect: false, // Use effect instead of layoutEffect to reduce reflows
+  });
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
+    stiffness: 200, // Increased stiffness for faster response
     damping: 30,
     restDelta: 0.001,
   });
@@ -486,12 +489,31 @@ export default function Home() {
   );
 
   useEffect(() => {
-    // Scroll to top when component mounts
-    animate(() => window.scrollY, 0, {
-      duration: 0.8,
-      easing: "ease-out",
-      onUpdate: (value) => window.scrollTo(0, value),
-    });
+    // Scroll to top when component mounts - using instant scroll to avoid forced reflow
+    // Use CSS scroll-behavior instead of JS animation for better performance
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    // If smooth scroll is needed, use requestAnimationFrame with throttling
+    if (window.scrollY > 0) {
+      const duration = 300; // Reduced duration
+      const start = window.scrollY;
+      const startTime = performance.now();
+
+      const scrollStep = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = start * (1 - easeOut);
+
+        window.scrollTo(0, current);
+
+        if (progress < 1) {
+          requestAnimationFrame(scrollStep);
+        }
+      };
+
+      requestAnimationFrame(scrollStep);
+    }
   }, []);
 
   const resetFilters = () => {
@@ -524,10 +546,14 @@ export default function Home() {
 
   return (
     <>
-      {/* Progress bar for scroll */}
+      {/* Progress bar for scroll - optimized with will-change */}
       <motion.div
         className="progress-bar fixed top-0 left-0 h-1 bg-blue-500 z-50"
-        style={{ scaleX }}
+        style={{
+          scaleX,
+          willChange: "transform", // Hint browser to optimize
+          transformOrigin: "0%",
+        }}
       />
       <div className="dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container w-[90%] mx-auto">
@@ -602,23 +628,32 @@ export default function Home() {
               <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
                 <button
                   onClick={() => setViewMode("grid")}
+                  type="button"
+                  aria-label="Switch to grid view"
+                  aria-pressed={viewMode === "grid"}
+                  title="Grid view"
                   className={`px-3 py-2 rounded-lg transition-colors duration-200 ${
                     viewMode === "grid"
                       ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-600 dark:text-gray-400"
                   }`}
                 >
-                  <FaTh />
+                  <FaTh aria-hidden="true" />
                 </button>
+
                 <button
                   onClick={() => setViewMode("list")}
+                  type="button"
+                  aria-label="Switch to list view"
+                  aria-pressed={viewMode === "list"}
+                  title="List view"
                   className={`px-3 py-2 rounded-lg transition-colors duration-200 ${
                     viewMode === "list"
                       ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-600 dark:text-gray-400"
                   }`}
                 >
-                  <FaList />
+                  <FaList aria-hidden="true" />
                 </button>
               </div>
             </div>

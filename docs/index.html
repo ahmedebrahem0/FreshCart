@@ -2,12 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <!-- استخدم أيقونة من public بدل svg -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="manifest" href="/FreshCart/manifest.json" />
-<link rel="icon" type="image/png" href="/FreshCart/icons/icon-192.png" />
-<link rel="apple-touch-icon" href="/FreshCart/icons/icon-192.png" />
+    <link rel="preload" as="image" href="/FreshCart/assets/slider-2-Byt2-_T5.jpeg" fetchpriority="high">
+
+    <!-- LCP Image Preload - Will be updated by Vite plugin after build -->
+    <link
+      rel="preload"
+      as="image"
+      href="/FreshCart/assets/images/slider-image-3.jpeg"
+      fetchpriority="high"
+    />
+
+    <!-- PWA / Icons -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="/FreshCart/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/FreshCart/icons/icon-192.png" />
 
     <!-- SEO Meta Tags -->
     <title>Fresh Cart - Best Online Grocery Store</title>
@@ -23,21 +32,32 @@
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Fresh Cart - Best Online Grocery Store" />
+    <meta
+      property="og:title"
+      content="Fresh Cart - Best Online Grocery Store"
+    />
     <meta
       property="og:description"
       content="The best online grocery store. Shop fresh, high-quality products with fast and secure delivery."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ahmedebrahem0.github.io/FreshCart/" />
-    <!-- صورة OG لازم تكون من public وبـ URL مطلق -->
-    <meta property="og:image" content="https://ahmedebrahem0.github.io/FreshCart/og-1200x630.png" />
+    <meta
+      property="og:url"
+      content="https://ahmedebrahem0.github.io/FreshCart/"
+    />
+    <meta
+      property="og:image"
+      content="https://ahmedebrahem0.github.io/FreshCart/og-1200x630.png"
+    />
     <meta property="og:site_name" content="Fresh Cart" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Fresh Cart - Best Online Grocery Store" />
+    <meta
+      name="twitter:title"
+      content="Fresh Cart - Best Online Grocery Store"
+    />
     <meta
       name="twitter:description"
       content="The best online grocery store. Shop fresh, high-quality products with fast and secure delivery."
@@ -47,13 +67,12 @@
       content="https://ahmedebrahem0.github.io/FreshCart/og-1200x630.png"
     />
 
-    <!-- Theme / PWA -->
+    <!-- Theme -->
     <meta name="theme-color" content="#10b981" />
     <meta name="msapplication-TileColor" content="#10b981" />
     <link rel="canonical" href="https://ahmedebrahem0.github.io/FreshCart/" />
 
-
-    <!-- GitHub Pages SPA redirect fixer (rafgraph/spa-github-pages) -->
+    <!-- SPA redirect fixer (rafgraph/spa-github-pages) -->
     <script type="text/javascript">
       (function (l) {
         if (l.search[1] === "/") {
@@ -72,11 +91,10 @@
         }
       })(window.location);
     </script>
-    <script type="module" crossorigin src="/FreshCart/assets/index-zUgC76Qf.js"></script>
-    <link rel="stylesheet" crossorigin href="/FreshCart/assets/index-CWjStu2N.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- يفضّل يبقى كده؛ Vite هيعالج الـbase أثناء build -->
+    <script type="module" crossorigin src="/FreshCart/assets/index-BmDbDZ3F.js"></script>
+    <link rel="preload" as="style" href="/FreshCart/assets/index.Y5yMynB8.css" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/FreshCart/assets/index.Y5yMynB8.css"></noscript>
+    <!-- Vite سيعالج الـ base عند build -->
+
   </body>
 </html>

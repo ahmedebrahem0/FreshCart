@@ -458,9 +458,12 @@ export default function Products() {
   const { data: categoriesData } = useCategories();
   const { data: brandsData } = useBrands();
 
-  const { scrollYProgress } = useScroll();
+  // Optimized scroll progress with throttling to reduce forced reflows
+  const { scrollYProgress } = useScroll({
+    layoutEffect: false, // Use effect instead of layoutEffect to reduce reflows
+  });
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
+    stiffness: 200, // Increased stiffness for faster response
     damping: 30,
     restDelta: 0.001,
   });
@@ -692,13 +695,33 @@ export default function Products() {
     setCurrentPage(1);
   };
 
-  // Effects
+  // Effects - optimized scroll to top
   useEffect(() => {
-    animate(() => window.scrollY, 0, {
-      duration: 0.8,
-      easing: "ease-out",
-      onUpdate: (value) => window.scrollTo(0, value),
-    });
+    // Scroll to top when component mounts - using instant scroll to avoid forced reflow
+    // Use CSS scroll-behavior instead of JS animation for better performance
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    // If smooth scroll is needed, use requestAnimationFrame with throttling
+    if (window.scrollY > 0) {
+      const duration = 300; // Reduced duration
+      const start = window.scrollY;
+      const startTime = performance.now();
+
+      const scrollStep = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = start * (1 - easeOut);
+
+        window.scrollTo(0, current);
+
+        if (progress < 1) {
+          requestAnimationFrame(scrollStep);
+        }
+      };
+
+      requestAnimationFrame(scrollStep);
+    }
   }, []);
 
   useEffect(() => {
@@ -749,10 +772,14 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Progress bar */}
+      {/* Progress bar - optimized with will-change */}
       <motion.div
         className="progress-bar fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 z-50"
-        style={{ scaleX }}
+        style={{
+          scaleX,
+          willChange: "transform", // Hint browser to optimize
+          transformOrigin: "0%",
+        }}
       />
 
       {/* Header Section */}

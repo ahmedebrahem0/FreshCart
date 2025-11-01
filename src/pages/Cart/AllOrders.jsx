@@ -1,7 +1,7 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../../components/Loading";
+import api from "../../services/api";
 import { motion } from "framer-motion";
 import {
   FaStar,
@@ -30,20 +30,17 @@ export default function AllOrders() {
   // Function to fetch orders
   const fetchAllOrders = () => {
     if (!decodedToken?.id) {
-      console.error("User is not logged in or data is unavailable");
+      setLoading(false);
       return;
     }
 
-    axios
-      .get(
-        `https://ecommerce.routemisr.com/api/v1/orders/user/${decodedToken.id}`
-      )
+    api
+      .get(`/orders/user/${decodedToken.id}`)
       .then((res) => {
-        console.log("res all", res);
-        setOrders(res.data || []); // Set data or empty array if no data
+        setOrders(res?.data || []); // Set data or empty array if no data
       })
       .catch((error) => {
-        console.error("Error fetching orders:", error);
+        // Silently handle errors to avoid console pollution
         setOrders([]); // Set empty array in case of error
       })
       .finally(() => {
@@ -452,7 +449,3 @@ export default function AllOrders() {
     </div>
   );
 }
-
-
-
-

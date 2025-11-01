@@ -3,6 +3,8 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../../components/Loading";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import api from "../../services/api";
+import { authService } from "../../services/authService";
 import {
   FaUser,
   FaShoppingBag,
@@ -117,39 +119,15 @@ export default function Profile() {
             const decoded = jwtDecode(token);
             userId = decoded._id || decoded.id_user || decoded.id;
           } catch (decodeError) {
-            console.error("Error decoding token:", decodeError);
             setError("Invalid token. Please login again.");
             setLoading(false);
             return;
           }
         }
 
-        // Debug: طباعة محتوى decodedToken
-        console.log("🔍 Full Decoded Token:", decodedToken);
-        console.log("🔍 Available IDs:", {
-          id: decodedToken?.id,
-          id_user: decodedToken?.id_user,
-          user_id: decodedToken?.user_id,
-          _id: decodedToken?._id,
-        });
-
-        console.log("🔍 Using User ID:", userId);
-        const ordersResponse = await fetch(
-          `https://ecommerce.routemisr.com/api/v1/orders/user/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!ordersResponse.ok) {
-          throw new Error("Failed to fetch orders");
-        }
-
-        const ordersData = await ordersResponse.json();
-        console.log("📦 Orders Data:", ordersData);
+        // Fetch orders using api service
+        const ordersResponse = await api.get(`/orders/user/${userId}`);
+        const ordersData = ordersResponse?.data || [];
         setOrders(ordersData);
 
         // حساب الإحصائيات من الطلبات
@@ -159,27 +137,14 @@ export default function Profile() {
         // استخراج بيانات المستخدم من أول طلب (إذا وجد)
         if (ordersData.length > 0 && ordersData[0].user) {
           setUserData(ordersData[0].user);
-          console.log("👤 User Data from orders:", ordersData[0].user);
         } else {
           // إذا لم يكن هناك طلبات، نحاول جلب بيانات المستخدم من API مباشرة
-          // No orders found, fetch user profile directly
           try {
-            const profileResponse = await fetch(
-              `https://ecommerce.routemisr.com/api/v1/users/profile`,
-              {
-                headers: {
-                  token: token,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-
-            if (profileResponse.ok) {
-              const profileData = await profileResponse.json();
-              setUserData(profileData.data);
+            const profileResponse = await authService.getUserProfile();
+            if (profileResponse?.data?.data) {
+              setUserData(profileResponse.data.data);
             } else {
-              // إذا فشل جلب البيانات من API، نستخدم بيانات من decodedToken
-              console.log("📝 Fallback to decodedToken data");
+              // Fallback إلى بيانات decodedToken
               setUserData({
                 name: decodedToken?.name,
                 email: decodedToken?.email,
@@ -187,8 +152,7 @@ export default function Profile() {
               });
             }
           } catch (profileError) {
-            // Swallow profile fetch errors to avoid console noise in audits
-            // Fallback إلى بيانات decodedToken
+            // Fallback إلى بيانات decodedToken بدون طباعة أخطاء
             setUserData({
               name: decodedToken?.name,
               email: decodedToken?.email,
@@ -197,8 +161,7 @@ export default function Profile() {
           }
         }
       } catch (err) {
-        console.error("❌ Error:", err);
-        setError(err.message);
+        setError(err?.message || "An error occurred");
       } finally {
         setLoading(false);
       }

@@ -4,11 +4,7 @@ import axios from "axios";
 // اضبط الـ base URL حسب الـ API الخاص بك
 const API_BASE_URL = "https://ecommerce.routemisr.com/api/v1";
 
-// فلاغ بيئة التطوير (Vite)
-const isDev =
-  typeof import.meta !== "undefined"
-    ? import.meta.env.DEV
-    : process.env.NODE_ENV !== "production";
+// Removed isDev check - we handle errors silently to avoid console pollution
 
 // Helper: تنظيف أي علامات/مسافات حول قيمة التوكن
 function normalizeToken(raw) {
@@ -43,29 +39,21 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
+    const url = error?.config?.url || "";
 
-    // استخدم تحذير في التطوير فقط — بدون console.error في الإنتاج
-    if (isDev) {
-      console.warn(
-        "[API]",
-        (error?.config?.method || "GET").toUpperCase(),
-        error?.config?.url,
-        "| status:",
-        status || "NO_RESPONSE",
-        "| msg:",
-        error?.message
-      );
-    }
-
-    // تنظيف تلقائي عند Unauthorized
-    if (status === 401) {
-      localStorage.removeItem("tkn");
-      localStorage.removeItem("userProfile");
-      // يمكن إطلاق حدث عام لو حابب تسمعه في AuthContext:
-      // window.dispatchEvent(new CustomEvent("auth:logout"));
+    // تنظيف تلقائي عند Unauthorized أو Bad Request للمصادقة
+    if (status === 401 || (status === 400 && url.includes("profile"))) {
+      // إزالة token غير صالح فقط، بدون طباعة أخطاء
+      if (status === 401) {
+        localStorage.removeItem("tkn");
+        localStorage.removeItem("userProfile");
+      }
+      // للـ 400 في profile، نترك الطلب يفشل بصمت
+      // لأن الـ catch handler في المكونات سيتعامل معه
     }
 
     // رجّع الخطأ للمستدعي (خليه يتعامل بـ try/catch أو Toast)
+    // بدون طباعة أي شيء في console لتجنب Lighthouse warnings
     return Promise.reject(error);
   }
 );

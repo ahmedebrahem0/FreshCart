@@ -188,6 +188,11 @@ body {
   transform-origin: 0%;
   width: 100%;
   z-index: 1000;
+  /* Performance optimizations to reduce forced reflows */
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU acceleration */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* styles.css */
