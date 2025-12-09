@@ -16,15 +16,6 @@
 
 ---
 
-## 📸 Screenshots
-
-<div align="center">
-  <img src="docs/screenshots/home.png" alt="Home Page" width="45%">
-  <img src="docs/screenshots/products.png" alt="Products Page" width="45%">
-</div>
-
----
-
 ## ✨ Key Features
 
 ### 🔐 Authentication & Security
