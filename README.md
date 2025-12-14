@@ -16,6 +16,18 @@
 
 ---
 
+<<<<<<< Updated upstream
+=======
+## 📸 Screenshots
+
+<div align="center">
+  <img src="docs/screenshots/home.png" alt="Home Page" width="45%">
+  <img src="docs/screenshots/products.png" alt="Products Page" width="45%">
+</div>
+
+---
+
+>>>>>>> Stashed changes
 ## ✨ Key Features
 
 ### 🔐 Authentication & Security
@@ -242,6 +254,38 @@ Fresh-Cart/
 - **Node.js** >= 16.x
 - **npm** >= 8.x or **yarn** >= 1.22.x
 
+<<<<<<< Updated upstream
+=======
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ahmedebrahem0/FreshCart.git
+   cd FreshCart
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
+   The app will open at `http://localhost:3000`
+
+4. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+5. **Preview production build**
+   ```bash
+   npm run preview
+   ```
+
+>>>>>>> Stashed changes
 ---
 
 ## 📜 Available Scripts

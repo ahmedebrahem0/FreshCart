@@ -134,7 +134,7 @@ const EnhancedProductCard = ({ product }) => {
 
     if (response.status === true) {
       const res = await getUserWishlist();
-      if (res === false) {
+      if (res !== false) {
         toast.success(response.res.data.message);
         setTimeout(() => {
           setHeart(null);
