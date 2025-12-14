@@ -81,6 +81,7 @@ const EnhancedProductCard = ({ product }) => {
         setCorrect(null);
       }, 2000);
       toast.success(response.res.data.message);
+      console.log("response.res.data.message:", response.res.data.message);
     } else {
       toast.error(response.error.response.data.message);
     }
@@ -136,7 +137,7 @@ const EnhancedProductCard = ({ product }) => {
       const res = await getUserWishlist();
       if (res !== false) {
         toast.success(response.res.data.message);
-        console.log("response.res.data.message", response.res.data.message);
+        console.log("response.res.data.message:", response.res.data.message);
         setTimeout(() => {
           setHeart(null);
         }, 2000);
