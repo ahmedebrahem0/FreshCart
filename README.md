@@ -10,24 +10,7 @@
 
 **A production-ready, feature-rich e-commerce application built with modern web technologies**
 
-[Live Demo](https://ahmedebrahem0.github.io/FreshCart/) • [Report Bug](https://github.com/ahmedebrahem0/FreshCart/issues) • [Request Feature](https://github.com/ahmedebrahem0/FreshCart/issues)
 
-</div>
-
----
-
-<<<<<<< Updated upstream
-=======
-## 📸 Screenshots
-
-<div align="center">
-  <img src="docs/screenshots/home.png" alt="Home Page" width="45%">
-  <img src="docs/screenshots/products.png" alt="Products Page" width="45%">
-</div>
-
----
-
->>>>>>> Stashed changes
 ## ✨ Key Features
 
 ### 🔐 Authentication & Security
