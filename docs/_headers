@@ -1,0 +1,29 @@
+/assets/*.js
+  Content-Type: application/javascript
+
+/assets/*.css
+  Content-Type: text/css
+
+/assets/*.woff2
+  Content-Type: font/woff2
+
+/assets/*.woff
+  Content-Type: font/woff
+
+/assets/*.ttf
+  Content-Type: font/ttf
+
+/assets/*.svg
+  Content-Type: image/svg+xml
+
+/assets/*.webp
+  Content-Type: image/webp
+
+/assets/*.jpg
+  Content-Type: image/webp
+
+/assets/*.webp
+  Content-Type: image/webp
+
+/assets/*.gif
+  Content-Type: image/gif

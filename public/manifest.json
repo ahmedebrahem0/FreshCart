@@ -1,0 +1,19 @@
+{
+  "name": "Fresh Cart - Best Online Grocery Store",
+  "short_name": "Fresh Cart",
+  "description": "The best online grocery store. Shop fresh, high-quality products with fast and secure delivery.",
+  "start_url": "/FreshCart/",
+  "scope": "/FreshCart/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/FreshCart/icons/icon-192.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any" },
+    { "src": "/FreshCart/icons/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" },
+    { "src": "/FreshCart/icons/icon-512-maskable.webp", "sizes": "512x512", "type": "image/webp", "purpose": "maskable" }
+  ],
+  "categories": ["shopping", "food", "business"],
+  "lang": "en",
+  "dir": "ltr"
+}

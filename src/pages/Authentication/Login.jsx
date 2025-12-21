@@ -1,0 +1,137 @@
+import React from "react";
+import { MoonLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
+import { HiEye } from "react-icons/hi";
+import { HiMiniEyeSlash } from "react-icons/hi2";
+import { Link } from "react-router-dom";
+import UseLogin from "./../../hooks/UseLogin";
+import LoadingAuth from "../../components/LoadingAuth";
+
+export default function Login() {
+  const { Loading, Showing, setShowing, LoginFormik } = UseLogin();
+
+  return (
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-10">
+        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+              Welcome Back
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">
+              Sign in to your account to continue shopping
+            </p>
+          </div>
+
+          <form
+            onSubmit={LoginFormik.handleSubmit}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-100 dark:border-gray-700"
+          >
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Email Address
+                </label>
+                <input
+                  value={LoginFormik.values.email}
+                  onChange={LoginFormik.handleChange}
+                  onBlur={LoginFormik.handleBlur}
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                {LoginFormik.errors.email && LoginFormik.touched.email ? (
+                  <div
+                    className="p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 dark:text-red-300"
+                    role="alert"
+                  >
+                    {LoginFormik.errors.email}
+                  </div>
+                ) : null}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    value={LoginFormik.values.password}
+                    onChange={LoginFormik.handleChange}
+                    onBlur={LoginFormik.handleBlur}
+                    id="password"
+                    type={Showing ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 pr-12 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {LoginFormik.values.password ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowing(!Showing);
+                      }}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                    >
+                      {Showing ? (
+                        <HiEye className="w-5 h-5" />
+                      ) : (
+                        <HiMiniEyeSlash className="w-5 h-5" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
+                {LoginFormik.errors.password && LoginFormik.touched.password ? (
+                  <div
+                    className="p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 dark:text-red-300"
+                    role="alert"
+                  >
+                    {LoginFormik.errors.password}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Link
+                  to="/ForgetPassword"
+                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-xl font-semibold transition-colors disabled:opacity-50"
+                  disabled={!Loading}
+                >
+                  {Loading ? "Sign In" : <LoadingAuth />}
+                </button>
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/Register"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </form>
+          <ToastContainer hideProgressBar="true" />
+        </div>
+      </div>
+    </>
+  );
+}
