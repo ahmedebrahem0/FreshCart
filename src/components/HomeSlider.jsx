@@ -45,7 +45,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img1}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Quality groceries"
             loading="lazy"
             decoding="async"
@@ -59,7 +60,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img3}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Fresh vegetables"
             loading="lazy"
             decoding="async"
@@ -73,7 +75,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img4}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Organic products"
             loading="lazy"
             decoding="async"
@@ -87,7 +90,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img2}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Healthy food"
             loading="lazy"
             decoding="async"
@@ -101,7 +105,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img6}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Premium quality"
             loading="lazy"
             decoding="async"
