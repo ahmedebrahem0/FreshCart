@@ -30,7 +30,8 @@ export default function HomeSlider() {
         <div>
           <img
             src={img5}
-            className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[420px] xl:h-[320px] object-cover rounded-md"
+            className="block w-full h-full object-cover rounded-md"
+            
             alt="Fresh products"
             loading="eager"
             decoding="async"
