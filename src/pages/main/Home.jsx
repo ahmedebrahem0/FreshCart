@@ -572,7 +572,7 @@ export default function Home() {
       />
       <div className="dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container w-[90%] mx-auto">
-          <div className="pt-3 grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-80 px-2 mb-20">
+          <div className="pt-3 grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-80 px-2 mb-20 overflow-hidden">
             {/* Slider Section */}
             <div className="w-full h-60 md:h-80 md:col-span-2 md:mb-30 rounded-md overflow-hidden">
               <HomeSlider />

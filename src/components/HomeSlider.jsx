@@ -25,13 +25,12 @@ export default function HomeSlider() {
   };
 
   return (
-    <div className="slider-container ">
+    <div className="slider-container w-full">
       <Slider {...settings}>
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img5}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Fresh products"
             loading="eager"
             decoding="async"
@@ -42,11 +41,10 @@ export default function HomeSlider() {
           />
         </div>
 
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img1}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Quality groceries"
             loading="lazy"
             decoding="async"
@@ -57,11 +55,10 @@ export default function HomeSlider() {
           />
         </div>
 
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img3}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Fresh vegetables"
             loading="lazy"
             decoding="async"
@@ -72,11 +69,10 @@ export default function HomeSlider() {
           />
         </div>
 
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img4}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Organic products"
             loading="lazy"
             decoding="async"
@@ -87,11 +83,10 @@ export default function HomeSlider() {
           />
         </div>
 
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img2}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Healthy food"
             loading="lazy"
             decoding="async"
@@ -102,11 +97,10 @@ export default function HomeSlider() {
           />
         </div>
 
-        <div>
+        <div className="w-full h-80 overflow-hidden rounded-md">
           <img
             src={img6}
-            className="block w-full h-full object-cover rounded-md"
-            
+            className="block w-full h-full object-cover"
             alt="Premium quality"
             loading="lazy"
             decoding="async"
