@@ -1,11 +1,16 @@
 import React from "react";
-import { MoonLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
+
+import { ToastContainer} from "react-toastify";
+import { HiEye } from "react-icons/hi";
+import { HiMiniEyeSlash } from "react-icons/hi2";
+import { useState } from "react";
 import UseRegister from "./../../hooks/UseRegister";
 import LoadingAuth from "../../components/LoadingAuth";
 
 export default function Register() {
   const { Loading, RegisterFormik } = UseRegister();
+  const [Showing, setShowing] = useState(false);
+  const [ShowingConfirm, setShowingConfirm] = useState(false);
 
   return (
     <>
@@ -84,15 +89,30 @@ export default function Register() {
                 >
                   Password
                 </label>
-                <input
-                  value={RegisterFormik.values.password}
-                  onChange={RegisterFormik.handleChange}
-                  onBlur={RegisterFormik.handleBlur}
-                  id="password"
-                  type="password"
-                  placeholder="Enter a strong password"
-                  className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    value={RegisterFormik.values.password}
+                    onChange={RegisterFormik.handleChange}
+                    onBlur={RegisterFormik.handleBlur}
+                    id="password"
+                    type={Showing ? "text" : "password"}
+                    placeholder="Enter a strong password"
+                    className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 pr-12 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {RegisterFormik.values.password ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowing(!Showing)}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                    >
+                      {Showing ? (
+                        <HiEye className="w-5 h-5" />
+                      ) : (
+                        <HiMiniEyeSlash className="w-5 h-5" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
                 {RegisterFormik.errors.password &&
                 RegisterFormik.touched.password ? (
                   <div
@@ -111,15 +131,30 @@ export default function Register() {
                 >
                   Confirm Password
                 </label>
-                <input
-                  value={RegisterFormik.values.rePassword}
-                  onChange={RegisterFormik.handleChange}
-                  onBlur={RegisterFormik.handleBlur}
-                  id="rePassword"
-                  type="password"
-                  placeholder="Re-enter your password"
-                  className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    value={RegisterFormik.values.rePassword}
+                    onChange={RegisterFormik.handleChange}
+                    onBlur={RegisterFormik.handleBlur}
+                    id="rePassword"
+                    type={ShowingConfirm ? "text" : "password"}
+                    placeholder="Re-enter your password"
+                    className="w-full rounded-xl bg-white dark:bg-gray-700 p-3 pr-12 text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {RegisterFormik.values.rePassword ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowingConfirm(!ShowingConfirm)}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                    >
+                      {ShowingConfirm ? (
+                        <HiEye className="w-5 h-5" />
+                      ) : (
+                        <HiMiniEyeSlash className="w-5 h-5" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
                 {RegisterFormik.errors.rePassword &&
                 RegisterFormik.touched.rePassword ? (
                   <div

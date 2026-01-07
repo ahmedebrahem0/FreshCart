@@ -54,7 +54,8 @@ function SkeletonCard() {
 // ProductCard Component with List and Grid support
 function ProductCard({ product, viewMode }) {
   const { Token } = useContext(AuthContext);
-  const { addProduct, handelWishlist, addProductToWishlist } = useContext(CartContext);
+  const { addProduct, handelWishlist, addProductToWishlist } =
+    useContext(CartContext);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
 
@@ -88,7 +89,9 @@ function ProductCard({ product, viewMode }) {
     }
 
     // prevent duplicate wishlist additions
-    const alreadyInWishlist = addProductToWishlist?.some((item) => item._id === product._id);
+    const alreadyInWishlist = addProductToWishlist?.some(
+      (item) => item._id === product._id
+    );
     if (alreadyInWishlist) {
       toast.info("Product is already in your wishlist.");
       return;
@@ -571,10 +574,9 @@ export default function Home() {
         <div className="container w-[90%] mx-auto">
           <div className="pt-3 grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-80 px-2 mb-20">
             {/* Slider Section */}
-            <div className="w-full h-60 md:h-80 md:col-span-2 rounded-md overflow-hidden">
-  <HomeSlider />
-</div>
-
+            <div className="w-full h-60 md:h-80 md:col-span-2 md:mb-30 rounded-md overflow-hidden">
+              <HomeSlider />
+            </div>
 
             {/* Side Images Section */}
             <div className="w-full h-60 md:h-80 grid gap-4 grid-rows-2 mt-[100px] sm:mt-0">
