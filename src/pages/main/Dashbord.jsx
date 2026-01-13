@@ -616,32 +616,114 @@ export default function Dashboard() {
                               No items
                             </p>
                           ) : (
-                            <div className="flex flex-wrap gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                               {(order.cartItems || []).map((item) => {
                                 const pid = item.product?._id;
                                 const key = `${order._id}_${pid}`;
                                 return (
-                                  <div
+                                  <motion.div
                                     key={key}
-                                    className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 w-24 hover:shadow-md transition"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900/60 p-3 flex flex-col"
                                   >
-                                    <img
-                                      src={item.product?.imageCover}
-                                      alt={item.product?.title}
-                                      className="w-16 h-16 rounded-md object-cover bg-gray-200 mb-2"
-                                    />
-                                    <div className="text-center w-full">
-                                      <div className="text-xs font-semibold text-gray-900 dark:text-white truncate">
-                                        {item.product?.title}
-                                      </div>
-                                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {item.price} EGP
-                                      </div>
-                                      <div className="inline-block text-xs font-bold text-white bg-blue-600 dark:bg-blue-700 px-2 py-1 rounded-full mt-2">
+                                    {/* Product Image */}
+                                    <div className="relative w-full h-24 rounded-md border border-gray-100 dark:border-gray-700 mb-2 overflow-hidden">
+                                      <img
+                                        src={item.product?.imageCover}
+                                        alt={item.product?.title}
+                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                      />
+                                      <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md border border-white dark:border-gray-900">
                                         ×{item.count}
                                       </div>
                                     </div>
-                                  </div>
+
+                                    {/* Product Details */}
+                                    <div className="flex-1 flex flex-col">
+                                      <p className="text-xs font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+                                        {item.product?.title}
+                                      </p>
+
+                                      <div className="flex flex-wrap gap-1 mb-1">
+                                        {/* Brand */}
+                                        {item.product?.brand && (
+                                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-100 dark:border-blue-700/50">
+                                            {item.product?.brand.image && (
+                                              <img
+                                                src={item.product?.brand.image}
+                                                alt={item.product?.brand.name}
+                                                className="w-3 h-3 rounded object-cover"
+                                                onError={(e) => {
+                                                  e.target.style.display =
+                                                    "none";
+                                                }}
+                                              />
+                                            )}
+                                            <span className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 truncate">
+                                              {item.product?.brand.name}
+                                            </span>
+                                          </div>
+                                        )}
+
+                                        {/* Category */}
+                                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-900/40 border border-purple-100 dark:border-purple-700/50">
+                                          <span className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 truncate">
+                                            {item.product?.category?.name}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Rating */}
+                                      <div className="flex items-center gap-1 mb-2">
+                                        <div className="flex items-center gap-[1px]">
+                                          {[...Array(5)].map((_, i) => (
+                                            <span
+                                              key={i}
+                                              className={`text-[10px] ${
+                                                i <
+                                                Math.floor(
+                                                  item.product
+                                                    ?.ratingsAverage || 0
+                                                )
+                                                  ? "text-yellow-400"
+                                                  : "text-gray-300 dark:text-gray-600"
+                                              }`}
+                                            >
+                                              ★
+                                            </span>
+                                          ))}
+                                        </div>
+                                        <span className="text-[11px] text-gray-600 dark:text-gray-400">
+                                          {item.product?.ratingsAverage || 0}
+                                        </span>
+                                      </div>
+
+                                      {/* Prices */}
+                                      <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-700">
+                                        <div className="flex items-center justify-between">
+                                          <div>
+                                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                                              Unit
+                                            </p>
+                                            <p className="text-xs font-bold text-green-600 dark:text-green-400">
+                                              {item.price?.toLocaleString()}
+                                            </p>
+                                          </div>
+                                          <div className="text-right">
+                                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                                              Total
+                                            </p>
+                                            <p className="text-xs font-bold text-green-700 dark:text-green-300">
+                                              {(
+                                                item.price * item.count
+                                              )?.toLocaleString()}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
                                 );
                               })}
                             </div>
@@ -694,19 +776,53 @@ export default function Dashboard() {
                 {expandedOrders[order._id] ? "Hide Details" : "Show Details"}
               </button>
               {expandedOrders[order._id] && (
-                <div className="mt-2 space-y-2">
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(order.cartItems || []).map((item) => (
-                    <div
+                    <motion.div
                       key={`${order._id}-${item.product?._id}`}
-                      className="flex justify-between items-center text-sm p-2 bg-white dark:bg-gray-800 rounded"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900/60 p-3 flex flex-col"
                     >
-                      <span className="truncate flex-1 dark:text-gray-300">
-                        {item.product?.title}
-                      </span>
-                      <div className="flex items-center gap-2 ml-2">
-                        <span className="text-gray-500">x{item.count}</span>
+                      {/* Product Image */}
+                      <div className="relative w-full h-20 rounded-md border border-gray-100 dark:border-gray-700 mb-2 overflow-hidden">
+                        <img
+                          src={item.product?.imageCover}
+                          alt={item.product?.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md border border-white dark:border-gray-900">
+                          ×{item.count}
+                        </div>
                       </div>
-                    </div>
+
+                      {/* Product Details */}
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+                        {item.product?.title}
+                      </p>
+
+                      {/* Prices */}
+                      <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                              Unit
+                            </p>
+                            <p className="text-xs font-bold text-green-600 dark:text-green-400">
+                              {item.price?.toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                              Tot
+                            </p>
+                            <p className="text-xs font-bold text-green-700 dark:text-green-300">
+                              {(item.price * item.count)?.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
               )}
@@ -1480,7 +1596,8 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {reportBestSellingProducts.map((p, idx) => {
-                    const maxQuantity = reportBestSellingProducts[0]?.quantity || 1;
+                    const maxQuantity =
+                      reportBestSellingProducts[0]?.quantity || 1;
                     const percentage = (p.quantity / maxQuantity) * 100;
                     return (
                       <tr
