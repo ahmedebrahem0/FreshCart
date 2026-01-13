@@ -1,0 +1,18 @@
+.slider-container{perspective:1200px}
+.slider-container .slick-slide{transition:transform .9s cubic-bezier(.22,.9,.3,1);}
+.slider-container .slick-slide img{transition:transform .9s cubic-bezier(.22,.9,.3,1),filter .6s;transform-origin:center center;display:block}
+/* non-active slides slightly rotated / dimmed */
+.slider-container .slick-slide:not(.slick-active) img{transform:scale(.98) rotateY(-6deg);filter:brightness(.94)}
+/* active slide: smooth zoom + reset rotation */
+.slider-container .slick-active img{transform:scale(1.06) rotateY(0deg);filter:brightness(1)}
+/* optional small hover boost */
+.slider-container .slick-slide img:hover{transform:scale(1.08)}
+
+/* make sure slick list doesn't clip 3D perspective */
+.slider-container .slick-list{overflow:visible}
+
+/* responsive tweaks: smaller height on mobile (if using Tailwind h-80; override here) */
+@media (max-width:640px){
+  .slider-container .slick-slide{height:220px}
+  .slider-container .slick-slide img{object-fit:cover}
+}

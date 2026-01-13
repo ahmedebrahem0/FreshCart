@@ -1,902 +1,602 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { orderService } from "../../services";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement,
-} from "chart.js";
+import React, { useContext, useEffect, useState, useMemo } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import Loading from "../../components/Loading";
+import api from "../../services/api";
+import { motion, AnimatePresence } from "framer-motion";
 import {
+  FaStar,
   FaShoppingCart,
-  FaDollarSign,
+  FaMoneyBillWave,
+  FaTruck,
   FaCheckCircle,
+  FaClock,
   FaTimesCircle,
-  FaBoxOpen,
-  FaPlus,
-  FaMinus,
-  FaChevronDown,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaTag,
+  FaBox,
+  FaReceipt,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
-import { subDays, format } from "date-fns";
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement
-);
+const PAGE_SIZE = 5;
 
-export default function Dashboard() {
+export default function AllOrders() {
+  const { decodedToken } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Statistics state variables
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [totalSales, setTotalSales] = useState(0);
-  const [averageOrderValue, setAverageOrderValue] = useState(0);
-  const [paidOrders, setPaidOrders] = useState(0);
-  const [unpaidOrders, setUnpaidOrders] = useState(0);
-  const [bestSellingProducts, setBestSellingProducts] = useState([]);
-  const [totalProductsSold, setTotalProductsSold] = useState(0);
+  // UI state
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all"); // all | paid | unpaid | delivered | processing
+  const [paymentFilter, setPaymentFilter] = useState("all"); // all | cash | card
+  const [sortBy, setSortBy] = useState("newest"); // newest | oldest | totalDesc | totalAsc
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Per-item loading: key = `${orderId}_${productId}`
-  const [loadingItems, setLoadingItems] = useState({});
-  // Toggle expand items for order rows
-  const [expandedOrders, setExpandedOrders] = useState({}); // { [orderId]: boolean }
-
-  const toggleExpand = (orderId) => {
-    setExpandedOrders((prev) => ({ ...prev, [orderId]: !prev[orderId] }));
-  };
-
-  // Fetch data from API
-  const fetchOrders = useCallback(async () => {
-    try {
-      const response = await orderService.getAllOrders();
-      setOrders(response?.data?.data || []);
+  const fetchAllOrders = () => {
+    if (!decodedToken?.id) {
       setLoading(false);
-    } catch (err) {
-      setError(err?.message || "Failed to load orders");
-      setLoading(false);
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  // Calculate statistics when orders data changes
-  useEffect(() => {
-    if (orders.length > 0) {
-      setTotalOrders(orders.length);
-
-      const _totalSales = orders.reduce(
-        (sum, order) => sum + (order.totalOrderPrice || 0),
-        0
-      );
-      setTotalSales(_totalSales);
-      setAverageOrderValue(_totalSales / orders.length);
-
-      const _paidOrders = orders.filter((order) => order.isPaid).length;
-      setPaidOrders(_paidOrders);
-      setUnpaidOrders(orders.length - _paidOrders);
-
-      const productSales = {};
-      orders.forEach((order) => {
-        (order.cartItems || []).forEach((item) => {
-          const productId = item.product?._id;
-          const productName = item.product?.title || "Unknown";
-          const quantity = item.count || 0;
-          if (!productSales[productId]) {
-            productSales[productId] = { name: productName, quantity: 0 };
-          }
-          productSales[productId].quantity += quantity;
-        });
+    api
+      .get(`/orders/user/${decodedToken.id}`)
+      .then((res) => {
+        setOrders(res?.data || []);
+      })
+      .catch(() => {
+        setOrders([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const _bestSellingProducts = Object.values(productSales).sort(
-        (a, b) => b.quantity - a.quantity
-      );
-      setBestSellingProducts(_bestSellingProducts.slice(0, 5));
-
-      const _totalProductsSold = Object.values(productSales).reduce(
-        (sum, product) => sum + product.quantity,
-        0
-      );
-      setTotalProductsSold(_totalProductsSold);
-    } else {
-      setTotalOrders(0);
-      setTotalSales(0);
-      setAverageOrderValue(0);
-      setPaidOrders(0);
-      setUnpaidOrders(0);
-      setBestSellingProducts([]);
-      setTotalProductsSold(0);
-    }
-  }, [orders]);
-
-  // Charts Data
-  const barChartData = {
-    labels: bestSellingProducts.map((product) => product.name),
-    datasets: [
-      {
-        label: "Units Sold",
-        data: bestSellingProducts.map((product) => product.quantity),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
   };
 
-  // Last 7 days sales
-  const last7Days = Array.from({ length: 7 }, (_, i) =>
-    format(subDays(new Date(), 6 - i), "yyyy-MM-dd")
+  useEffect(() => {
+    if (decodedToken?.id) {
+      fetchAllOrders();
+    }
+  }, [decodedToken]);
+
+  // ===== STATS =====
+  const totalOrders = orders.length;
+  const paidOrders = orders.filter((o) => o.isPaid).length;
+  const deliveredOrders = orders.filter((o) => o.isDelivered).length;
+  const totalSpent = orders.reduce(
+    (sum, o) => sum + (o.totalOrderPrice || 0),
+    0
   );
-  const salesLast7Days = last7Days.map((day) => {
-    const dayOrders = orders.filter(
-      (order) => format(new Date(order.createdAt), "yyyy-MM-dd") === day
-    );
-    return dayOrders.reduce(
-      (sum, order) => sum + (order.totalOrderPrice || 0),
-      0
-    );
-  });
+  const averageOrderValue =
+    totalOrders > 0 ? Math.round(totalSpent / totalOrders) : 0;
 
-  const lineChartData = {
-    labels: last7Days.map((day) => format(new Date(day), "dd MMM")),
-    datasets: [
-      {
-        label: "Sales (EGP)",
-        data: salesLast7Days,
-        borderColor: "#0aad0a",
-        backgroundColor: "rgba(10,173,10,0.1)",
-        tension: 0.4,
-        pointRadius: 4,
-        pointBackgroundColor: "#0aad0a",
-        fill: true,
-      },
-    ],
-  };
+  // ===== FILTER + SORT + PAGINATION =====
 
-  const paymentPieData = {
-    labels: ["Cash", "Card"],
-    datasets: [
-      {
-        data: [
-          orders.filter((o) => o.paymentMethodType === "cash").length,
-          orders.filter((o) => o.paymentMethodType === "card").length,
-        ],
-        backgroundColor: ["#b2f2bb", "#a0c4ff"],
-        borderColor: ["#0aad0a", "#4361ee"],
-        borderWidth: 2,
-      },
-    ],
-  };
+  const processedOrders = useMemo(() => {
+    let result = [...orders];
 
-  // ====== Quantity Update (with per-item loading + optimistic UI) ======
-  const setItemLoading = (orderId, productId, value) => {
-    const key = `${orderId}_${productId}`;
-    setLoadingItems((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const isItemLoading = (orderId, productId) =>
-    !!loadingItems[`${orderId}_${productId}`];
-
-  const handleUpdateQuantity = async (orderId, productId, newQty) => {
-    if (newQty < 1) return; // enforce min 1
-
-    // Optimistic UI: update orders state locally first
-    setItemLoading(orderId, productId, true);
-    const prevOrders = JSON.parse(JSON.stringify(orders));
-
-    const nextOrders = orders.map((ord) => {
-      if (ord._id !== orderId) return ord;
-      const updated = { ...ord };
-      updated.cartItems = (updated.cartItems || []).map((ci) => {
-        if (ci.product?._id !== productId) return ci;
-        return { ...ci, count: newQty };
-      });
-      // Recalc total (best-effort; يعتمد على السعر إن وجد)
-      const total = (updated.cartItems || []).reduce((sum, ci) => {
-        const price =
-          ci.price ?? ci.product?.priceAfterDiscount ?? ci.product?.price ?? 0;
-        return sum + price * (ci.count || 0);
-      }, 0);
-      return { ...updated, totalOrderPrice: total };
-    });
-    setOrders(nextOrders);
-
-    try {
-      // Call API
-      await orderService.updateCartItem(orderId, productId, newQty);
-      // Refresh from backend to ensure accuracy
-      await fetchOrders();
-    } catch (err) {
-      console.error(err);
-      // rollback on error
-      setOrders(prevOrders);
-    } finally {
-      setItemLoading(orderId, productId, false);
+    // Filter by status
+    if (statusFilter === "paid") {
+      result = result.filter((o) => o.isPaid);
+    } else if (statusFilter === "unpaid") {
+      result = result.filter((o) => !o.isPaid);
+    } else if (statusFilter === "delivered") {
+      result = result.filter((o) => o.isDelivered);
+    } else if (statusFilter === "processing") {
+      result = result.filter((o) => !o.isDelivered);
     }
+
+    // Filter by payment method
+    if (paymentFilter === "cash") {
+      result = result.filter((o) => o.paymentMethodType === "cash");
+    } else if (paymentFilter === "card") {
+      result = result.filter((o) => o.paymentMethodType === "card");
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      const aDate = new Date(a.createdAt);
+      const bDate = new Date(b.createdAt);
+      const aTotal = a.totalOrderPrice || 0;
+      const bTotal = b.totalOrderPrice || 0;
+
+      switch (sortBy) {
+        case "oldest":
+          return aDate - bDate;
+        case "totalDesc":
+          return bTotal - aTotal;
+        case "totalAsc":
+          return aTotal - bTotal;
+        case "newest":
+        default:
+          return bDate - aDate;
+      }
+    });
+
+    return result;
+  }, [orders, statusFilter, paymentFilter, sortBy]);
+
+  const totalFiltered = processedOrders.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
+
+  // Reset page to 1 عندما تتغير الفلاتر أو الـ sort
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, paymentFilter, sortBy]);
+
+  const pagedOrders = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return processedOrders.slice(start, start + PAGE_SIZE);
+  }, [processedOrders, currentPage]);
+
+  const toggleExpand = (id) => {
+    setExpandedOrderId((prev) => (prev === id ? null : id));
   };
 
-  const handleDelta = (orderId, productId, currentQty, delta) => {
-    const target = (currentQty || 0) + delta;
-    if (target < 1) return;
-    if (isItemLoading(orderId, productId)) return;
-    handleUpdateQuantity(orderId, productId, target);
+  const handlePageChange = (direction) => {
+    setCurrentPage((prev) => {
+      if (direction === "prev") {
+        return prev > 1 ? prev - 1 : prev;
+      }
+      if (direction === "next") {
+        return prev < totalPages ? prev + 1 : prev;
+      }
+      return prev;
+    });
   };
 
   if (loading) {
     return (
-      <div className="text-center text-gray-600 mt-10">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <Loading />
       </div>
     );
   }
 
-  if (error) {
-    return <div className="text-center text-red-600 mt-10">Error: {error}</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Analytics Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Real-time insights and performance metrics
-          </p>
-        </motion.div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Total Orders */}
-          <motion.div
-            whileHover={{ scale: 1.05, y: -5 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Orders
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {totalOrders}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                <FaShoppingCart className="text-2xl text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <span className="font-medium">+12%</span>
-              <span className="ml-1">from last month</span>
-            </div>
-          </motion.div>
-
-          {/* Total Sales */}
-          <motion.div
-            whileHover={{ scale: 1.05, y: -5 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Sales
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {totalSales.toLocaleString()} EGP
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
-                <FaDollarSign className="text-2xl text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <span className="font-medium">+8%</span>
-              <span className="ml-1">from last month</span>
-            </div>
-          </motion.div>
-
-          {/* Paid Orders */}
-          <motion.div
-            whileHover={{ scale: 1.05, y: -5 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Paid Orders
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {paidOrders}
-                </p>
-              </div>
-              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
-                <FaCheckCircle className="text-2xl text-emerald-600 dark:text-emerald-400" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-emerald-600">
-              <span className="font-medium">
-                {totalOrders
-                  ? ((paidOrders / totalOrders) * 100).toFixed(1)
-                  : 0}
-                %
-              </span>
-              <span className="ml-1">success rate</span>
-            </div>
-          </motion.div>
-
-          {/* Unpaid Orders */}
-          <motion.div
-            whileHover={{ scale: 1.05, y: -5 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Unpaid Orders
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {unpaidOrders}
-                </p>
-              </div>
-              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl">
-                <FaTimesCircle className="text-2xl text-red-600 dark:text-red-400" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-red-600">
-              <span className="font-medium">
-                {totalOrders
-                  ? ((unpaidOrders / totalOrders) * 100).toFixed(1)
-                  : 0}
-                %
-              </span>
-              <span className="ml-1">pending</span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Recent Orders Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100 dark:border-gray-700"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Recent Orders
-            </h2>
-            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-              <span>Last 8 orders</span>
-            </div>
-          </div>
-
-          {/* Desktop Table */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Order ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Payment
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Items
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {orders.slice(0, 8).map((order) => (
-                  <React.Fragment key={order._id}>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-mono text-sm text-gray-900 dark:text-white">
-                          #{order._id.slice(-6)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {order.user?.name}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {order.user?.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                          {order.totalOrderPrice} EGP
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            order.paymentMethodType === "cash"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                          }`}
-                        >
-                          {order.paymentMethodType}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              order.isPaid
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                                : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                            }`}
-                          >
-                            {order.isPaid ? "Paid" : "Unpaid"}
-                          </span>
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              order.isDelivered
-                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                            }`}
-                          >
-                            {order.isDelivered ? "Delivered" : "Pending"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => toggleExpand(order._id)}
-                          className="inline-flex items-center px-3 py-1 text-sm rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                        >
-                          <FaBoxOpen className="mr-2 dark:text-white" />
-                          <span className="dark:text-white">
-                          {expandedOrders[order._id] ? "Hide" : "View"}
-                          </span>
-                          <FaChevronDown
-                            className={`ml-2 transition-transform dark:text-white ${
-                              expandedOrders[order._id] ? "rotate-180" : ""
-                            }`}
-                          />
-                        </button>
-                      </td>
-                    </tr>
-
-                    {expandedOrders[order._id] && (
-                      <tr className="bg-gray-50/60 dark:bg-gray-900/40">
-                        <td colSpan={7} className="px-6 py-4">
-                          {(order.cartItems || []).length === 0 ? (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              No items in this order.
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {(order.cartItems || []).map((item) => {
-                                const pid = item.product?._id;
-                                const key = `${order._id}_${pid}`;
-                                const qty = item.count || 0;
-                                const price =
-                                  item.price ??
-                                  item.product?.priceAfterDiscount ??
-                                  item.product?.price ??
-                                  0;
-                                const subtotal = price * qty;
-
-                                return (
-                                  <div
-                                    key={key}
-                                    className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      {item.product?.imageCover ? (
-                                        <img
-                                          src={item.product.imageCover}
-                                          alt={item.product?.title || "item"}
-                                          className="w-12 h-12 rounded-lg object-cover"
-                                        />
-                                      ) : (
-                                        <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                                      )}
-                                      <div>
-                                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                                          {item.product?.title || "Product"}
-                                        </div>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                                          {price} EGP • Subtotal:{" "}
-                                          <span className="font-medium">
-                                            {subtotal} EGP
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                      <div className="min-w-[48px] text-center font-semibold text-gray-900 dark:text-white bg-inherit">
-                                        Quantity: {qty}
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile/Tablet Cards */}
-          <div className="lg:hidden space-y-4">
-            {orders.slice(0, 8).map((order) => (
-              <div
-                key={order._id}
-                className="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-4 border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-mono text-sm text-gray-600 dark:text-gray-300">
-                        #{order._id.slice(-6)}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="mb-2">
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {order.user?.name}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {order.user?.email}
-                      </div>
-                    </div>
-                    <div className="text-lg font-bold text-[#0aad0a]">
-                      {order.totalOrderPrice} EGP
-                    </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {orders && orders.length > 0 ? (
+          <>
+            {/* HEADER + STATS */}
+            <div className="mb-8 space-y-4">
+              {/* Simple header */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
+                    <FaReceipt className="text-white text-lg" />
                   </div>
-                  <div className="flex flex-col items-end space-y-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        order.paymentMethodType === "cash"
-                          ? "bg-[#b2f2bb] text-[#14532d]"
-                          : "bg-[#a0c4ff] text-[#185a9d]"
-                      }`}
-                    >
-                      {order.paymentMethodType}
-                    </span>
-                    <div className="flex flex-col space-y-1">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          order.isPaid
-                            ? "bg-[#b2f2bb] text-[#14532d]"
-                            : "bg-[#ffe0e0] text-[#ff5858]"
-                        }`}
-                      >
-                        {order.isPaid ? "Paid" : "Unpaid"}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          order.isDelivered
-                            ? "bg-[#a0c4ff] text-[#185a9d]"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {order.isDelivered ? "Delivered" : "Not Delivered"}
-                      </span>
-                    </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                      Order History
+                    </h1>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {totalOrders} orders • {totalSpent.toLocaleString()} EGP
+                      total
+                    </p>
                   </div>
                 </div>
 
-                {/* Expandable items for mobile */}
-                <button
-                  onClick={() => toggleExpand(order._id)}
-                  className="w-full mt-2 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800"
-                >
-                  <FaBoxOpen />
-                  {expandedOrders[order._id]
-                    ? "إخفاء المنتجات"
-                    : "عرض المنتجات"}
-                  <FaChevronDown
-                    className={`transition-transform ${
-                      expandedOrders[order._id] ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {expandedOrders[order._id] && (
-                  <div className="mt-3 space-y-3">
-                    {(order.cartItems || []).map((item) => {
-                      const pid = item.product?._id;
-                      const qty = item.count || 0;
-                      const key = `${order._id}_${pid}`;
-                      const price =
-                        item.price ??
-                        item.product?.priceAfterDiscount ??
-                        item.product?.price ??
-                        0;
-
-                      return (
-                        <div
-                          key={key}
-                          className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            {item.product?.imageCover ? (
-                              <img
-                                src={item.product.imageCover}
-                                alt={item.product?.title || "item"}
-                                className="w-12 h-12 rounded-lg object-cover"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                            )}
-                            <div>
-                              <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                                {item.product?.title || "Product"}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {price} EGP
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() =>
-                                handleDelta(order._id, pid, qty, -1)
-                              }
-                              disabled={
-                                isItemLoading(order._id, pid) || qty <= 1
-                              }
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500 text-white disabled:opacity-50"
-                              title="Decrease"
-                            >
-                              {isItemLoading(order._id, pid) ? (
-                                <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 inline-block" />
-                              ) : (
-                                <FaMinus />
-                              )}
-                            </button>
-
-                            <div className="min-w-[48px] text-center font-semibold text-gray-900 dark:text-white">
-                              {qty}
-                            </div>
-
-                            <button
-                              onClick={() =>
-                                handleDelta(order._id, pid, qty, +1)
-                              }
-                              disabled={isItemLoading(order._id, pid)}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-600 text-white disabled:opacity-50"
-                              title="Increase"
-                            >
-                              {isItemLoading(order._id, pid) ? (
-                                <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 inline-block" />
-                              ) : (
-                                  // <FaPlus />
-                                  ''
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <div className="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 text-right">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Average order value
+                  </p>
+                  <p className="text-xl font-semibold text-slate-900 dark:text-white">
+                    {averageOrderValue} EGP
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Sales Chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Sales Trend
-              </h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Last 7 days
-              </span>
+              {/* Compact stats row */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <StatCard
+                  icon={FaShoppingCart}
+                  iconBg="bg-blue-100 text-blue-600"
+                  label="Total Orders"
+                  value={totalOrders}
+                />
+                <StatCard
+                  icon={FaCheckCircle}
+                  iconBg="bg-emerald-100 text-emerald-600"
+                  label="Paid"
+                  value={paidOrders}
+                />
+                <StatCard
+                  icon={FaTruck}
+                  iconBg="bg-indigo-100 text-indigo-600"
+                  label="Delivered"
+                  value={deliveredOrders}
+                />
+                <StatCard
+                  icon={FaMoneyBillWave}
+                  iconBg="bg-amber-100 text-amber-600"
+                  label="Total Spent"
+                  value={`${totalSpent.toLocaleString()} EGP`}
+                />
+              </div>
             </div>
-            <div className="h-80">
-              <Line
-                data={lineChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      backgroundColor: "rgba(0, 0, 0, 0.8)",
-                      titleColor: "white",
-                      bodyColor: "white",
-                      borderColor: "#0aad0a",
-                      borderWidth: 1,
-                    },
-                  },
-                  scales: {
-                    x: {
-                      grid: { display: false },
-                      ticks: {
-                        color: "#6b7280",
-                        maxRotation: 45,
-                        minRotation: 45,
-                      },
-                    },
-                    y: {
-                      grid: { color: "#f3f4f6" },
-                      ticks: { color: "#6b7280" },
-                    },
-                  },
-                }}
-              />
-            </div>
-          </motion.div>
 
-          {/* Best Selling Products */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.8 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Top Products
-              </h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Best sellers
-              </span>
-            </div>
-            <div className="h-80">
-              <Bar
-                data={barChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      backgroundColor: "rgba(0, 0, 0, 0.8)",
-                      titleColor: "white",
-                      bodyColor: "white",
-                      borderColor: "#3b82f6",
-                      borderWidth: 1,
-                    },
-                  },
-                  scales: {
-                    x: {
-                      grid: { display: false },
-                      ticks: {
-                        color: "#6b7280",
-                        maxRotation: 45,
-                        minRotation: 45,
-                      },
-                    },
-                    y: {
-                      grid: { color: "#f3f4f6" },
-                      ticks: { color: "#6b7280" },
-                    },
-                  },
-                }}
-              />
-            </div>
-          </motion.div>
-        </div>
+            {/* FILTERS + SORT BAR */}
+            <div className="mb-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl px-4 py-3 flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between shadow-sm">
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Status
+                </span>
+                <FilterChip
+                  active={statusFilter === "all"}
+                  onClick={() => setStatusFilter("all")}
+                  label="All"
+                />
+                <FilterChip
+                  active={statusFilter === "paid"}
+                  onClick={() => setStatusFilter("paid")}
+                  label="Paid"
+                />
+                <FilterChip
+                  active={statusFilter === "unpaid"}
+                  onClick={() => setStatusFilter("unpaid")}
+                  label="Unpaid"
+                />
+                <FilterChip
+                  active={statusFilter === "delivered"}
+                  onClick={() => setStatusFilter("delivered")}
+                  label="Delivered"
+                />
+                <FilterChip
+                  active={statusFilter === "processing"}
+                  onClick={() => setStatusFilter("processing")}
+                  label="In progress"
+                />
+              </div>
 
-        {/* Payment Methods Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 1.0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Payment Methods
+              <div className="flex flex-wrap gap-3 items-center justify-between lg:justify-end">
+                {/* Payment filter */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Payment
+                  </span>
+                  <FilterChip
+                    active={paymentFilter === "all"}
+                    onClick={() => setPaymentFilter("all")}
+                    label="All"
+                  />
+                  <FilterChip
+                    active={paymentFilter === "cash"}
+                    onClick={() => setPaymentFilter("cash")}
+                    label="Cash"
+                  />
+                  <FilterChip
+                    active={paymentFilter === "card"}
+                    onClick={() => setPaymentFilter("card")}
+                    label="Card"
+                  />
+                </div>
+
+                {/* Sort */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Sort
+                  </span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="text-xs sm:text-sm px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="totalDesc">Highest total</option>
+                    <option value="totalAsc">Lowest total</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                Showing{" "}
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
+                  {pagedOrders.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
+                  {totalFiltered}
+                </span>{" "}
+                orders (filtered)
+              </div>
+            </div>
+
+            {/* ORDERS LIST */}
+            <div className="space-y-3">
+              {pagedOrders.map((order, index) => {
+                const isExpanded = expandedOrderId === order._id;
+                const itemCount = order.cartItems?.length || 0;
+
+                return (
+                  <motion.div
+                    key={order._id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-sm"
+                  >
+                    {/* SUMMARY ROW */}
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(order._id)}
+                      className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 text-left"
+                    >
+                      {/* Left: ID + date + items */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[11px] font-semibold text-slate-700 dark:text-slate-200">
+                          #{order.id}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {itemCount} item{itemCount !== 1 ? "s" : ""} •{" "}
+                            {order.paymentMethodType}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Middle: Status pills */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                            order.isPaid
+                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
+                              : "bg-rose-50 text-rose-700 dark:bg-rose-900/40 dark:text-rose-200"
+                          }`}
+                        >
+                          {order.isPaid ? (
+                            <FaCheckCircle className="text-[10px]" />
+                          ) : (
+                            <FaTimesCircle className="text-[10px]" />
+                          )}
+                          {order.isPaid ? "Paid" : "Unpaid"}
+                        </span>
+
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                            order.isDelivered
+                              ? "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
+                              : "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200"
+                          }`}
+                        >
+                          {order.isDelivered ? (
+                            <FaTruck className="text-[10px]" />
+                          ) : (
+                            <FaClock className="text-[10px]" />
+                          )}
+                          {order.isDelivered ? "Delivered" : "In progress"}
+                        </span>
+                      </div>
+
+                      {/* Right: Total + chevron */}
+                      <div className="flex items-center justify-between sm:justify-end gap-2 sm:min-w-[140px]">
+                        <p className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
+                          {order.totalOrderPrice.toLocaleString()} EGP
+                        </p>
+                        <span
+                          className={`text-xs text-slate-500 dark:text-slate-400 transition-transform ${
+                            isExpanded ? "rotate-90" : ""
+                          }`}
+                        >
+                          ▸
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* DETAILS */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border-t border-slate-100 dark:border-slate-700"
+                        >
+                          <div className="px-4 py-3 space-y-4">
+                            {/* Shipping info */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                              <InfoRow
+                                icon={FaMapMarkerAlt}
+                                label="City"
+                                value={order.shippingAddress?.city || "-"}
+                              />
+                              <InfoRow
+                                icon={FaPhone}
+                                label="Phone"
+                                value={order.shippingAddress?.phone || "-"}
+                              />
+                              <InfoRow
+                                icon={FaBox}
+                                label="Address details"
+                                value={order.shippingAddress?.details || "-"}
+                              />
+                            </div>
+
+                            {/* Items list */}
+                            <div className="border border-slate-100 dark:border-slate-700 rounded-lg p-3">
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                                <FaShoppingCart className="text-emerald-500" />
+                                Items ({itemCount})
+                              </p>
+                              <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                                {order.cartItems.map((item, idx) => (
+                                  <div
+                                    key={`${order._id}-${idx}`}
+                                    className="flex gap-3 items-center text-sm"
+                                  >
+                                    {/* Thumbnail */}
+                                    <div className="relative flex-shrink-0">
+                                      <img
+                                        src={item.product.imageCover}
+                                        alt={item.product.title}
+                                        className="w-14 h-14 rounded-md object-cover bg-slate-100"
+                                      />
+                                      <div className="absolute -top-1 -right-1 bg-slate-900 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                                        {item.count}
+                                      </div>
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-slate-900 dark:text-white leading-snug line-clamp-1">
+                                        {item.product.title}
+                                      </p>
+                                      <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                                        {item.product.category?.name && (
+                                          <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
+                                            <FaTag className="text-[10px]" />
+                                            {item.product.category.name}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <div className="flex items-center gap-0.5">
+                                          {[...Array(5)].map((_, i) => (
+                                            <FaStar
+                                              key={i}
+                                              className={`text-[10px] ${
+                                                i <
+                                                Math.floor(
+                                                  item.product.ratingsAverage ||
+                                                    0
+                                                )
+                                                  ? "text-amber-400"
+                                                  : "text-slate-300 dark:text-slate-600"
+                                              }`}
+                                            />
+                                          ))}
+                                        </div>
+                                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                          ({item.product.ratingsAverage}) •{" "}
+                                          {item.product.ratingsQuantity} reviews
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="text-right text-xs sm:text-sm flex flex-col gap-0.5">
+                                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                        {item.price.toLocaleString()} EGP
+                                      </span>
+                                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                        Total:{" "}
+                                        {(
+                                          item.price * item.count
+                                        ).toLocaleString()}{" "}
+                                        EGP
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* PAGINATION FOOTER */}
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+              <p className="text-slate-600 dark:text-slate-400">
+                Page{" "}
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {currentPage}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {totalPages}
+                </span>
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange("prev")}
+                  disabled={currentPage <= 1}
+                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-800 text-xs sm:text-sm"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => handlePageChange("next")}
+                  disabled={currentPage >= totalPages}
+                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-800 text-xs sm:text-sm"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          // EMPTY STATE
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center mb-4">
+              <FaReceipt className="text-slate-500 dark:text-slate-300 text-3xl" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text:white mb-2">
+              No orders yet
             </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Distribution
-            </span>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md">
+              You haven&apos;t placed any orders yet. Start shopping and your
+              order history will appear here.
+            </p>
           </div>
-          <div className="flex justify-center">
-            <div className="w-80 h-80">
-              <Doughnut
-                data={paymentPieData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  cutout: "60%",
-                  plugins: {
-                    legend: {
-                      position: "bottom",
-                      labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        color: "#6b7280",
-                      },
-                    },
-                    tooltip: {
-                      backgroundColor: "rgba(0, 0, 0, 0.8)",
-                      titleColor: "white",
-                      bodyColor: "white",
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-        </motion.div>
+        )}
       </div>
     </div>
   );
 }
 
+// ===== SMALL REUSABLE COMPONENTS =====
 
+function StatCard({ icon: Icon, iconBg, label, value }) {
+  return (
+    <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+      <div
+        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm ${iconBg}`}
+      >
+        <Icon />
+      </div>
+      <div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
 
+function FilterChip({ active, label, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+        active
+          ? "bg-emerald-500 border-emerald-500 text-white shadow-sm"
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
 
-
-
-
-
+function InfoRow({ icon: Icon, label, value }) {
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="mt-[3px] text-slate-400" />
+      <div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="text-sm text-slate-800 dark:text-slate-100 line-clamp-2">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}

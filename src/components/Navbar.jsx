@@ -567,7 +567,7 @@ export default function Navbar() {
                 <i className="fa-brands fa-facebook" aria-hidden="true"></i>
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/ahmedebrahem/"
                 className="text-2xl"
                 aria-label="LinkedIn"
                 title="LinkedIn"

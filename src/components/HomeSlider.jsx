@@ -8,7 +8,7 @@ import img3 from "../../src/assets/images/slider-image-1.webp";
 import img4 from "../../src/assets/images/slider-image-2.webp";
 import img5 from "../../src/assets/images/slider-image-3.webp";
 import img6 from "../../src/assets/images/slider-2.webp";
-// import "./styles.css"; // استيراد ملف الـ CSS
+import "./HomeSlider.css";
 
 export default function HomeSlider() {
   var settings = {

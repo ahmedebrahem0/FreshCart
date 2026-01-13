@@ -60,7 +60,7 @@ export default function Footer() {
 
             <motion.a
               whileHover={{ scale: 1.2, color: "#0aad0a" }}
-              href="#"
+              href="https://www.linkedin.com/in/ahmedebrahem/"
               className="text-2xl transition-colors"
               aria-label="LinkedIn"
               title="LinkedIn"
