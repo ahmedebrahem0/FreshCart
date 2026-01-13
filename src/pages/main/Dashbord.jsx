@@ -586,7 +586,7 @@ function FilterChip({ active, label, onClick }) {
     </button>
   );
 }
-
+// 
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-2">
