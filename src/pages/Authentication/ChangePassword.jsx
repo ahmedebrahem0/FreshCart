@@ -50,7 +50,7 @@ export default function ChangeMyPassword() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-10">
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-10">
         <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">

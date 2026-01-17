@@ -14,12 +14,13 @@ export default function Register() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-10">
-        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-10 sm:py-14 lg:py-16">
+        <div className="w-full max-w-lg lg:max-w-xl mx-auto">
           <div className="mb-6 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight break-words">
               Create Account
             </h1>
+
             <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">
               Join FreshCart and start shopping today.
             </p>
@@ -27,7 +28,7 @@ export default function Register() {
 
           <form
             onSubmit={RegisterFormik.handleSubmit}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10 border border-gray-100 dark:border-gray-700"
           >
             <div className="space-y-4">
               <div>

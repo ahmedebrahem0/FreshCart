@@ -28,6 +28,9 @@ export default function Navbar() {
   const profileAbortRef = useRef(null);
   const ordersAbortRef = useRef(null);
 
+  // ✅ NEW: حالة بتقول هل الصفحة اتعمل فيها scroll ولا لا
+  const [isScrolled, setIsScrolled] = useState(false);
+
   // 🌙 Dark Mode Persistence
   useEffect(() => {
     if (darkMode) {
@@ -38,6 +41,20 @@ export default function Navbar() {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  // ✅ NEW: متابعة الاسكرول علشان نغير لون / شفافية الـ navbar
+  useEffect(() => {
+    function handleScroll() {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 🧠 Fetch Profile + Orders (once when token exists)
   useEffect(() => {
@@ -144,7 +161,13 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="text-gray-800 dark:text-gray-100 bg-[#f0f3f2] dark:bg-gray-900 dark:backdrop-blur shadow-md transition-colors duration-500 border-b-[0.5px] border-white dark:border-gray-700 relative z-[99999]">
+    <nav
+      className={`fixed top-0 left-0 w-full text-gray-800 dark:text-gray-100 shadow-md transition-colors duration-500 border-b-[0.5px] border-white dark:border-gray-700 z-[99999] ${
+        isScrolled
+          ? "bg-[#f0f3f2]/80 dark:bg-gray-900/70 backdrop-blur dark:backdrop-blur"
+          : "bg-[#f0f3f2] dark:bg-gray-900 dark:backdrop-blur"
+      }`}
+    >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* ✅ Branding */}

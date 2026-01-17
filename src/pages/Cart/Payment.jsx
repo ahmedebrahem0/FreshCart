@@ -73,7 +73,7 @@ export default function Login() {
         }
       )
       .then((res) => {
-        console.log(res);
+        console.log("resres")
         setTimeout(() => {
           setLoadingOrder(true);
           console.log("hello");
